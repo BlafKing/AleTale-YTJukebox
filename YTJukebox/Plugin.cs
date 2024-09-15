@@ -105,6 +105,7 @@ namespace YTJukeboxMod {
             GameObject Common = GameObject.Find("Common");
             YtRPCManager.transform.SetParent(Common.transform, false);
             ytRPCInstance = YtRPCManager.AddComponent<YtRPC>();
+
             UI.CreateCustomUI();
         }
 
