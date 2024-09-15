@@ -29,34 +29,66 @@ namespace YTJukeboxMod {
 
         [ServerRpc(RequireOwnership = false)]
         public void TriggerDownloadServerRpc(string inputURL, ServerRpcParams serverRpcParams = default) {
-            if (!IsServer && !IsHost) {
+            Debug.Log("TriggerDownloadServerRpc");
+
+            // Get the NetworkManager instance
+            NetworkManager networkManager = NetworkManager.Singleton;
+
+            // Ensure the network manager is valid and listening
+            if (networkManager == null || !networkManager.IsListening) {
+                Debug.Log("NetworkManager is null or not listening");
                 return;
             }
 
+            // Check if the current instance is the server or host
+            if (!networkManager.IsServer && !networkManager.IsHost) {
+                Debug.Log("User is not server nor host");
+                return;
+            }
+
+            // Trigger download on all clients
             BroadcastDownloadClientRpc(inputURL);
         }
 
         [ClientRpc]
         private void BroadcastDownloadClientRpc(string inputURL, ClientRpcParams clientRpcParams = default) {
+            Debug.Log("BroadcastDownloadClientRpc");
             StartDownloadFileAsync(inputURL);
         }
 
         private async void StartDownloadFileAsync(string inputURL) {
-            Debug.Log($"Download started on client for URL: {inputURL}");
+            Debug.Log($"StartDownloadFileAsync started on client for URL: {inputURL}");
 
+            // Perform the download operation asynchronously
             await Download.GetCustomSong(inputURL);
 
+            // Notify server when the download is complete
             NotifyDownloadCompleteServerRpc();
         }
 
         [ServerRpc(RequireOwnership = false)]
         private void NotifyDownloadCompleteServerRpc(ServerRpcParams serverRpcParams = default) {
-            if (!IsServer && !IsHost) {
+            Debug.Log("NotifyDownloadCompleteServerRpc");
+
+            // Get the NetworkManager instance
+            NetworkManager networkManager = NetworkManager.Singleton;
+
+            // Ensure the network manager is valid and listening
+            if (networkManager == null || !networkManager.IsListening) {
+                Debug.Log("NetworkManager is null or not listening");
                 return;
             }
 
+            // Check if the current instance is the server or host
+            if (!networkManager.IsServer && !networkManager.IsHost) {
+                Debug.Log("User is not server nor host");
+                return;
+            }
+
+            // Increment the number of players who have completed the download
             playersDownloaded++;
 
+            // Check if all players have completed the download
             if (playersDownloaded == PlayerManager.Instance.players.Count) {
                 Debug.Log("All players have completed the download.");
             }
@@ -90,7 +122,6 @@ namespace YTJukeboxMod {
         }
 
         public void OnWorldLoad() {
-            UI.CreateCustomUI();
             Audio.OnWorldLoad();
             AddEmptyTrack();
 
@@ -99,6 +130,7 @@ namespace YTJukeboxMod {
             YtRPCManager.transform.SetParent(Common.transform, false);
             ytRPCInstance = YtRPCManager.AddComponent<YtRPC>();
 
+            UI.CreateCustomUI();
         }
 
         private void Update() {
