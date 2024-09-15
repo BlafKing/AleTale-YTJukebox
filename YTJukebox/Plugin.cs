@@ -109,7 +109,6 @@ namespace YTJukeboxMod {
         }
 
         private void Update() {
-
             if (UI.GameCanvas) {
                 if (Input.GetKeyDown(KeyCode.Escape)) {
                     if (UI.Youtube.activeSelf == true) {
