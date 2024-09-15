@@ -69,8 +69,9 @@ namespace YTJukeboxMod {
             ytRPCPrefab = new GameObject("YT-RPC");
             ytRPCPrefab.AddComponent<YtRPC>();
             ytNetworkObject = ytRPCPrefab.AddComponent<NetworkObject>();
-
+            Debug.Log("created new ytRPCPrefab GameObject with components");
             networkManager.AddNetworkPrefab(ytRPCPrefab);
+            Debug.Log("Added ytRPCPrefab to NetworkPrefabs");
         }
 
         public void OnWorldLoad() {
