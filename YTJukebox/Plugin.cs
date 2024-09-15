@@ -112,7 +112,6 @@ namespace YTJukeboxMod {
 
         private void AddEmptyTrack() {
             var staticGuid = new FMOD.GUID { Data1 = -502618873, Data2 = 1190340663, Data3 = 1799067022, Data4 = -1538532083 };
-
             if (!JukeboxManager.Instance.tracks.ContainsKey(99)) {
                 JukeboxManager.Instance.tracks.Add(99, new JukeboxTrack {
                     id = 99,
