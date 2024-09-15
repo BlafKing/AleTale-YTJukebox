@@ -7,6 +7,7 @@ using Debug = UnityEngine.Debug;
 using System.Threading.Tasks;
 using Unity.Netcode;
 using System;
+using System.Runtime.CompilerServices;
 
 namespace YTJukeboxMod {
     static public class ModPaths {
@@ -27,21 +28,29 @@ namespace YTJukeboxMod {
 
     public class YtRPC : NetworkBehaviour {
 
-        // This method will be triggered on any player (host or client)
+        public void Init(GameObject YtRPCManager) {
+            NetworkManager networkManager = base.NetworkManager;
+            YtRPCManager.AddComponent<NetworkObject>();
+
+            if (networkManager.IsHost) {
+                NetworkObject networkObject = YtRPCManager.GetComponent<NetworkObject>();
+                networkObject.Spawn();
+                Debug.Log("Host: NetworkObject spawned.");
+            }
+            else if (networkManager.IsClient) {
+                Debug.Log("Client: Initialized but not spawning NetworkObject.");
+            }
+        }
+
         [ServerRpc(RequireOwnership = false)]
         public void SendMessageToAllServerRpc(string message, ServerRpcParams serverRpcParams = default) {
-            // Trigger the client RPC to all players, including the host
             SendMessageToAllClientsRpc(message);
         }
 
-        // This method will be run on all clients, including the host
         [ClientRpc]
         private void SendMessageToAllClientsRpc(string message, ClientRpcParams clientRpcParams = default) {
             Debug.Log("Message received by all players: " + message);
-            // Here, you can also add code to display this message in a UI or handle it in another way
         }
-
-        // You can add more functionality to handle how the message is processed on the clients
     }
 
     [BepInPlugin("com.tomdom.ytjukebox", "YTJukebox", "1.0.0")]
@@ -52,11 +61,6 @@ namespace YTJukeboxMod {
         private void Awake() {
             instance = this;
             ModPaths.SetPaths();
-            GameObject YtRPCManager = new GameObject("YTJukebox RPC Manager");
-            // GameObject Common = GameObject.Find("Common");
-            // YtRPCManager.transform.SetParent(Common.transform, false);
-            ytRPCInstance = YtRPCManager.AddComponent<YtRPC>();
-            DontDestroyOnLoad(YtRPCManager);
 
             if (!File.Exists(ModPaths.yt_dlp) || !File.Exists(ModPaths.ffmpeg)) {
                 Debug.Log("yt-dlp or ffmpeg not found! triggering download");
@@ -80,6 +84,12 @@ namespace YTJukeboxMod {
             Audio.OnWorldLoad();
             AddEmptyTrack();
             UI.CreateCustomUI();
+
+            GameObject YtRPCManager = new GameObject("YTJukebox RPC Manager");
+            ytRPCInstance = YtRPCManager.AddComponent<YtRPC>();
+
+            ytRPCInstance.Init(YtRPCManager);
+            DontDestroyOnLoad(YtRPCManager);
         }
 
         private void Update() {
