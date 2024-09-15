@@ -24,30 +24,20 @@ namespace YTJukeboxMod {
         }
     }
 
-    public class YtRPC : NetworkManager {
+    public class YtRPC : NetworkBehaviour {
         [ServerRpc(RequireOwnership = false)]
-        public void SendMessageServerRpc(string message, ServerRpcParams serverRpcParams = default) {
-            if (!IsServer && !IsHost) {
-                Debug.Log("SendMessageServerRpc triggered but void is not host or server");
+        public void Test() {
+            NetworkManager networkManager = base.NetworkManager;
+            if (networkManager == null || !networkManager.IsListening) {
                 return;
             }
-            Debug.Log("SendMessageServerRpc triggered");
-            SendMessageToClientsClientRpc(message);
-        }
 
-        [ClientRpc]
-        private void SendMessageToClientsClientRpc(string message, ClientRpcParams clientRpcParams = default) {
-            Debug.Log($"Message received on client: {message}");
-        }
-
-        public void TriggerMessage(string message) {
-            if (IsServer || IsHost) {
-                Debug.Log("Command triggered as host");
-                SendMessageToClientsClientRpc(message);
+            if (networkManager.IsClient) {
+                Debug.Log("Trigger from client");
             }
-            else {
-                Debug.Log("Command triggered as client");
-                SendMessageServerRpc(message);
+
+            if (networkManager.IsHost) {
+                Debug.Log("Trigger from host");
             }
         }
     }
