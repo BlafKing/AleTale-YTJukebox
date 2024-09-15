@@ -40,6 +40,7 @@ namespace YTJukeboxMod {
                 waveOut.Dispose();
                 isPlaying = false;
                 Debug.Log("Track stopped.");
+
             }
         }
 
