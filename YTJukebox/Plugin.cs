@@ -27,13 +27,12 @@ namespace YTJukeboxMod {
     }
 
     public class YtRPC : NetworkBehaviour {
-        public void Init(GameObject YtRPCManager) {
+        public void Init(NetworkObject ytNetworkObject) {
+            Debug.Log("Init triggered");
             NetworkManager networkManager = base.NetworkManager;
-            YtRPCManager.AddComponent<NetworkObject>();
 
             if (networkManager.IsHost) {
-                NetworkObject networkObject = YtRPCManager.GetComponent<NetworkObject>();
-                networkObject.Spawn();
+                ytNetworkObject.Spawn();
                 Debug.Log("Host: NetworkObject spawned.");
             }
             else if (networkManager.IsClient) {
@@ -56,6 +55,7 @@ namespace YTJukeboxMod {
     public class Plugin : BaseUnityPlugin {
         private static Plugin instance;
         private static YtRPC ytRPCInstance;
+        private static NetworkObject ytNetworkObject;
 
         private void Awake() {
             instance = this;
@@ -86,8 +86,9 @@ namespace YTJukeboxMod {
 
             GameObject YtRPCManager = new GameObject("YTJukebox RPC Manager");
             ytRPCInstance = YtRPCManager.AddComponent<YtRPC>();
+            ytNetworkObject = YtRPCManager.AddComponent<NetworkObject>();
 
-            ytRPCInstance.Init(YtRPCManager);
+            ytRPCInstance.Init(ytNetworkObject);
             DontDestroyOnLoad(YtRPCManager);
         }
 
