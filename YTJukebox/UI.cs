@@ -10,7 +10,6 @@ namespace YTJukeboxMod {
         static public GameObject Youtube, Jukebox, GameCanvas;
         static public GameMenu gameMenu;
         static private TMP_InputField inputField;
-        static private YtRPC ytRPC;
 
         static private Sprite CreateSprite(string filePath) {
             Texture2D texture = LoadTextureFromFile(filePath);
@@ -29,7 +28,6 @@ namespace YTJukeboxMod {
             GameCanvas = GameObject.Find("Common/GameCanvas");
             JukeBoxControls = GameObject.Find("Common/GameCanvas/Jukebox Screen/Panel/Controls");
             gameMenu = GameCanvas.GetComponent<GameMenu>();
-            ytRPC = Plugin.GetYtRpcInstance();
             CreateYTButton();
             CreateYTUI();
         }

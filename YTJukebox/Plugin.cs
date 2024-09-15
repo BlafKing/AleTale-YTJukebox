@@ -40,6 +40,7 @@ namespace YTJukeboxMod {
             }
         }
 
+
         [ServerRpc(RequireOwnership = false)]
         public void SendMessageToAllServerRpc(string message, ServerRpcParams serverRpcParams = default) {
             SendMessageToAllClientsRpc(message);
@@ -54,8 +55,6 @@ namespace YTJukeboxMod {
     [BepInPlugin("com.tomdom.ytjukebox", "YTJukebox", "1.0.0")]
     public class Plugin : BaseUnityPlugin {
         private static Plugin instance;
-        private static YtRPC ytRPCInstance;
-        private static NetworkObject ytNetworkObject;
 
         private void Awake() {
             instance = this;
@@ -75,25 +74,27 @@ namespace YTJukeboxMod {
             return instance;
         }
 
-        public static YtRPC GetYtRpcInstance() {
-            return ytRPCInstance;
-        }
-
         public void OnWorldLoad() {
             Audio.OnWorldLoad();
             AddEmptyTrack();
             UI.CreateCustomUI();
 
-            GameObject YtRPCManager = new GameObject("YTJukebox RPC Manager");
-            ytRPCInstance = YtRPCManager.AddComponent<YtRPC>();
-            ytNetworkObject = YtRPCManager.AddComponent<NetworkObject>();
+            GameObject SteamNetManager = GameObject.Find("SteamNetManager");
+            NetworkManager networkManager = SteamNetManager.GetComponent<NetworkManager>();
 
-            ytRPCInstance.Init(ytNetworkObject);
-            DontDestroyOnLoad(YtRPCManager);
+            if (networkManager.IsHost) {
+                GameObject YtRPCManager = new GameObject("YT-RPC");
+                YtRPC ytRPCInstance = YtRPCManager.AddComponent<YtRPC>();
+                NetworkObject ytNetworkObject = YtRPCManager.AddComponent<NetworkObject>();
+                ytNetworkObject.Spawn();
+            }
+
         }
 
         private void Update() {
             if (Input.GetKeyDown(KeyCode.P)) {
+                GameObject YtRPCManager = GameObject.Find("YT-RPC");
+                YtRPC ytRPCInstance = YtRPCManager.GetComponent<YtRPC>();
                 ytRPCInstance.SendMessageToAllServerRpc("plasje van basje");
             }
 
