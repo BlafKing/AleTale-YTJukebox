@@ -29,64 +29,50 @@ namespace YTJukeboxMod {
 
         [ServerRpc(RequireOwnership = false)]
         public void TriggerDownloadServerRpc(string inputURL, ServerRpcParams serverRpcParams = default) {
-            Debug.Log("TriggerDownloadServerRpc");
+            Debug.Log("TriggerDownloadServerRpc called on host");
 
-            // Get the base NetworkManager instance
-            NetworkManager networkManager = base.NetworkManager;
-
-            // Ensure the network manager is valid and listening
-            if (networkManager == null || !networkManager.IsListening) {
-                Debug.Log("NetworkManager is null or not listening");
+            // Ensure that we are running on the host
+            if (!IsHost) {
+                Debug.LogError("TriggerDownloadServerRpc: Not running on the host!");
                 return;
             }
 
-            // Check if the current instance is the host or client
-            if (!networkManager.IsClient && !networkManager.IsHost) {
-                Debug.Log("User is neither client nor host");
-                return;
-            }
+            Debug.Log("ServerRpc is executing on host, broadcasting to clients...");
 
-            // Trigger download on all clients
+            // Broadcast the download action to all clients, including the one that triggered it
             BroadcastDownloadClientRpc(inputURL);
         }
 
         [ClientRpc]
         private void BroadcastDownloadClientRpc(string inputURL, ClientRpcParams clientRpcParams = default) {
-            Debug.Log("BroadcastDownloadClientRpc");
+            Debug.Log($"BroadcastDownloadClientRpc: Executing on client, starting download for URL: {inputURL}");
+
+            // Start the download on the client that received this RPC
             StartDownloadFileAsync(inputURL);
         }
 
         private async void StartDownloadFileAsync(string inputURL) {
             Debug.Log($"StartDownloadFileAsync started on client for URL: {inputURL}");
 
-            // Perform the download operation asynchronously
+            // Simulate the download process (assuming the download function is asynchronous)
             await Download.GetCustomSong(inputURL);
 
-            // Notify server when the download is complete
+            // Notify the host that this client has completed the download
             NotifyDownloadCompleteServerRpc();
         }
 
         [ServerRpc(RequireOwnership = false)]
         private void NotifyDownloadCompleteServerRpc(ServerRpcParams serverRpcParams = default) {
-            Debug.Log("NotifyDownloadCompleteServerRpc");
+            Debug.Log("NotifyDownloadCompleteServerRpc called by client");
 
-            // Get the base NetworkManager instance
-            NetworkManager networkManager = base.NetworkManager;
-
-            // Ensure the network manager is valid and listening
-            if (networkManager == null || !networkManager.IsListening) {
-                Debug.Log("NetworkManager is null or not listening");
+            // Ensure this is running on the host
+            if (!IsHost) {
+                Debug.LogError("NotifyDownloadCompleteServerRpc: Not running on the host!");
                 return;
             }
 
-            // Check if the current instance is the host or client
-            if (!networkManager.IsClient && !networkManager.IsHost) {
-                Debug.Log("User is neither client nor host");
-                return;
-            }
-
-            // Increment the number of players who have completed the download
             playersDownloaded++;
+            Debug.Log($"PlayersDownloaded count: {playersDownloaded}");
 
             // Check if all players have completed the download
             if (playersDownloaded == PlayerManager.Instance.players.Count) {
