@@ -24,33 +24,29 @@ namespace YTJukeboxMod {
         }
     }
 
-    public class YtRPC : NetworkBehaviour {
-        // This function is called by a client or host to send a message to all clients
+    public class YtRPC : NetworkManager {
         [ServerRpc(RequireOwnership = false)]
         public void SendMessageServerRpc(string message, ServerRpcParams serverRpcParams = default) {
-            // Only the server or host should handle broadcasting the message
             if (!IsServer && !IsHost) {
+                Debug.Log("SendMessageServerRpc triggered but void is not host or server");
                 return;
             }
-
-            // Broadcast the message to all clients, including the host
+            Debug.Log("SendMessageServerRpc triggered");
             SendMessageToClientsClientRpc(message);
         }
 
-        // This function will be called on all clients (including the host) to receive the message
         [ClientRpc]
         private void SendMessageToClientsClientRpc(string message, ClientRpcParams clientRpcParams = default) {
             Debug.Log($"Message received on client: {message}");
         }
 
-        // This function can be used to trigger the message from either the host or client
         public void TriggerMessage(string message) {
             if (IsServer || IsHost) {
-                // If it's the host or server, just send the message directly to all clients
+                Debug.Log("Command triggered as host");
                 SendMessageToClientsClientRpc(message);
             }
             else {
-                // If it's a client, send the message to the server to broadcast to everyone
+                Debug.Log("Command triggered as client");
                 SendMessageServerRpc(message);
             }
         }
@@ -112,7 +108,6 @@ namespace YTJukeboxMod {
 
         private void AddEmptyTrack() {
             var staticGuid = new FMOD.GUID { Data1 = -502618873, Data2 = 1190340663, Data3 = 1799067022, Data4 = -1538532083 };
-
             if (!JukeboxManager.Instance.tracks.ContainsKey(99)) {
                 JukeboxManager.Instance.tracks.Add(99, new JukeboxTrack {
                     id = 99,
