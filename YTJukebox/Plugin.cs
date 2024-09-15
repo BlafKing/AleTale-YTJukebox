@@ -72,7 +72,7 @@ namespace YTJukeboxMod {
             Debug.Log("created new ytRPCPrefab GameObject with components");
             networkManager.AddNetworkPrefab(ytRPCPrefab);
             Debug.Log("Added ytRPCPrefab to NetworkPrefabs");
-        }
+            DontDestroyOnLoad(ytRPCPrefab);        }
 
         public void OnWorldLoad() {
             Audio.OnWorldLoad();
