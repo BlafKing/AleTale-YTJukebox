@@ -25,47 +25,33 @@ namespace YTJukeboxMod {
     }
 
     public class YtRPC : NetworkBehaviour {
-        private int playersDownloaded = 0;
-
-        // Called by either the host or a client
+        // This function is called by a client or host to send a message to all clients
         [ServerRpc(RequireOwnership = false)]
-        public void TriggerDownloadServerRpc(string inputURL, ServerRpcParams serverRpcParams = default) {
-            Debug.Log("TriggerDownloadServerRpc called on the server or host");
+        public void SendMessageServerRpc(string message, ServerRpcParams serverRpcParams = default) {
+            // Only the server or host should handle broadcasting the message
+            if (!IsServer && !IsHost) {
+                return;
+            }
 
-            // This will run on the host. It sends the request to all clients.
-            BroadcastDownloadClientRpc(inputURL);
+            // Broadcast the message to all clients, including the host
+            SendMessageToClientsClientRpc(message);
         }
 
-        // Broadcasts the download event to all clients, including the host
+        // This function will be called on all clients (including the host) to receive the message
         [ClientRpc]
-        private void BroadcastDownloadClientRpc(string inputURL, ClientRpcParams clientRpcParams = default) {
-            Debug.Log($"BroadcastDownloadClientRpc received on client for URL: {inputURL}");
-
-            // Start the download on each client
-            StartDownloadFileAsync(inputURL);
+        private void SendMessageToClientsClientRpc(string message, ClientRpcParams clientRpcParams = default) {
+            Debug.Log($"Message received on client: {message}");
         }
 
-        // Client-side asynchronous download logic
-        private async void StartDownloadFileAsync(string inputURL) {
-            Debug.Log($"StartDownloadFileAsync started on client for URL: {inputURL}");
-
-            // Perform the download operation (assumes Download.GetCustomSong is async)
-            await Download.GetCustomSong(inputURL);
-
-            // Once download is done, notify the server (host)
-            NotifyDownloadCompleteServerRpc();
-        }
-
-        // Notify the host when a client has completed the download
-        [ServerRpc(RequireOwnership = false)]
-        private void NotifyDownloadCompleteServerRpc(ServerRpcParams serverRpcParams = default) {
-            Debug.Log("NotifyDownloadCompleteServerRpc called by a client");
-
-            playersDownloaded++;
-
-            // Check if all players have completed the download
-            if (playersDownloaded == PlayerManager.Instance.players.Count) {
-                Debug.Log("All players have completed the download.");
+        // This function can be used to trigger the message from either the host or client
+        public void TriggerMessage(string message) {
+            if (IsServer || IsHost) {
+                // If it's the host or server, just send the message directly to all clients
+                SendMessageToClientsClientRpc(message);
+            }
+            else {
+                // If it's a client, send the message to the server to broadcast to everyone
+                SendMessageServerRpc(message);
             }
         }
     }

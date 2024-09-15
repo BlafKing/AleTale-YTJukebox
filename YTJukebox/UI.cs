@@ -152,7 +152,7 @@ namespace YTJukeboxMod {
             PlayTextTransform.anchorMax = new Vector2(0.5f, 0.6f);
 
             Button button = PlayButton.AddComponent<Button>();
-            button.onClick.AddListener(() => ytRPC.TriggerDownloadServerRpc(inputField.text));
+            button.onClick.AddListener(() => ytRPC.TriggerMessage(inputField.text));
         }
     }
 }
