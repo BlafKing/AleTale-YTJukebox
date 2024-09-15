@@ -42,7 +42,8 @@ namespace YTJukeboxMod {
     [BepInPlugin("com.tomdom.ytjukebox", "YTJukebox", "1.0.0")]
     public class Plugin : BaseUnityPlugin {
         private static Plugin instance;
-
+        private static GameObject ytRPCPrefab;
+        private static NetworkObject ytNetworkObject;
         private void Awake() {
             instance = this;
             ModPaths.SetPaths();
@@ -61,6 +62,17 @@ namespace YTJukeboxMod {
             return instance;
         }
 
+        public void CreatePrefab() {
+            GameObject SteamNetManager = GameObject.Find("SteamNetManager");
+            NetworkManager networkManager = SteamNetManager.GetComponent<NetworkManager>();
+
+            ytRPCPrefab = new GameObject("YT-RPC");
+            ytRPCPrefab.AddComponent<YtRPC>();
+            ytNetworkObject = ytRPCPrefab.AddComponent<NetworkObject>();
+
+            networkManager.AddNetworkPrefab(ytRPCPrefab);
+        }
+
         public void OnWorldLoad() {
             Audio.OnWorldLoad();
             AddEmptyTrack();
@@ -70,12 +82,8 @@ namespace YTJukeboxMod {
             NetworkManager networkManager = SteamNetManager.GetComponent<NetworkManager>();
 
             if (networkManager.IsHost) {
-                GameObject YtRPCManager = new GameObject("YT-RPC");
-                YtRPC ytRPCInstance = YtRPCManager.AddComponent<YtRPC>();
-                NetworkObject ytNetworkObject = YtRPCManager.AddComponent<NetworkObject>();
                 ytNetworkObject.Spawn();
             }
-
         }
 
         private void Update() {

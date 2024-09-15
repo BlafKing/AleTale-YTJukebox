@@ -75,5 +75,11 @@ namespace YTJukeboxMod {
                 }
             }
         }
+        [HarmonyPatch(typeof(SteamManager), "Start", MethodType.Normal)]
+        private class SteamManagerPatch {
+            static void Postfix() {
+                main.CreatePrefab();
+            }
+        }
     }
 }
