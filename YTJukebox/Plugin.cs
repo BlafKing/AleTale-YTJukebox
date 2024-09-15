@@ -26,7 +26,7 @@ namespace YTJukeboxMod {
         }
     }
 
-    public class YtRPC : NetworkBehaviour {
+    public class YTJukeboxRPC : NetworkBehaviour {
 
         [ServerRpc(RequireOwnership = false)]
         public void SendMessageToAllServerRpc(string message, ServerRpcParams serverRpcParams = default) {
@@ -42,6 +42,7 @@ namespace YTJukeboxMod {
     [BepInPlugin("com.tomdom.ytjukebox", "YTJukebox", "1.0.0")]
     public class Plugin : BaseUnityPlugin {
         private static Plugin instance;
+        private static YTJukeboxRPC ytRPC;
 
         private void Awake() {
             instance = this;
@@ -69,9 +70,15 @@ namespace YTJukeboxMod {
             Audio.OnWorldLoad();
             AddEmptyTrack();
             UI.CreateCustomUI();
+            ytRPC = GameObject.Find("Common/Game").AddComponent<YTJukeboxRPC>();
         }
 
         private void Update() {
+            if (Input.GetKeyDown(KeyCode.P)) {
+                ytRPC.SendMessageToAllServerRpc("Hello, World!");
+            }
+
+
             if (UI.GameCanvas) {
                 if (Input.GetKeyDown(KeyCode.Escape)) {
                     if (UI.Youtube.activeSelf == true) {
