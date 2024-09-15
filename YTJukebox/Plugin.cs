@@ -84,8 +84,8 @@ namespace YTJukeboxMod {
             AddEmptyTrack();
 
             GameObject YtRPCManager = new GameObject("YTJukebox RPC Manager");
-            GameObject Common = GameObject.Find("Common");
-            YtRPCManager.transform.SetParent(Common.transform, false);
+            // GameObject Common = GameObject.Find("Common");
+            // YtRPCManager.transform.SetParent(Common.transform, false);
             ytRPCInstance = YtRPCManager.AddComponent<YtRPC>();
             UI.CreateCustomUI();
         }
