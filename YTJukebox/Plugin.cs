@@ -26,18 +26,15 @@ namespace YTJukeboxMod {
 
     public class YtRPC : NetworkBehaviour {
         [ServerRpc(RequireOwnership = false)]
-        public void Test() {
-            NetworkManager networkManager = base.NetworkManager;
-            if (networkManager == null || !networkManager.IsListening) {
-                return;
+        public void Test(ServerRpcParams serverRpcParams = default) {
+            if (base.IsServer) {
+                Debug.Log("Is Server");
             }
-
-            if (networkManager.IsClient) {
-                Debug.Log("Trigger from client");
+            if (base.IsHost) {
+                Debug.Log("Is Host");
             }
-
-            if (networkManager.IsHost) {
-                Debug.Log("Trigger from host");
+            if (base.IsClient) {
+                Debug.Log("Is Client");
             }
         }
     }
@@ -50,6 +47,10 @@ namespace YTJukeboxMod {
         private void Awake() {
             instance = this;
             ModPaths.SetPaths();
+            GameObject YtRPCManager = new GameObject("YTJukebox RPC Manager");
+            // GameObject Common = GameObject.Find("Common");
+            // YtRPCManager.transform.SetParent(Common.transform, false);
+            ytRPCInstance = YtRPCManager.AddComponent<YtRPC>();
 
             if (!File.Exists(ModPaths.yt_dlp) || !File.Exists(ModPaths.ffmpeg)) {
                 Debug.Log("yt-dlp or ffmpeg not found! triggering download");
@@ -72,15 +73,15 @@ namespace YTJukeboxMod {
         public void OnWorldLoad() {
             Audio.OnWorldLoad();
             AddEmptyTrack();
-
-            GameObject YtRPCManager = new GameObject("YTJukebox RPC Manager");
-            // GameObject Common = GameObject.Find("Common");
-            // YtRPCManager.transform.SetParent(Common.transform, false);
-            ytRPCInstance = YtRPCManager.AddComponent<YtRPC>();
             UI.CreateCustomUI();
         }
 
         private void Update() {
+            if (Input.GetKeyDown(KeyCode.P)) {
+                ytRPCInstance.Test();
+            }
+
+
             if (UI.GameCanvas) {
                 if (Input.GetKeyDown(KeyCode.Escape)) {
                     if (UI.Youtube.activeSelf == true) {

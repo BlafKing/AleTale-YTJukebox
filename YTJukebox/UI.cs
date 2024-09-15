@@ -153,7 +153,7 @@ namespace YTJukeboxMod {
 
             Button button = PlayButton.AddComponent<Button>();
             //inputField.text
-            button.onClick.AddListener(() => ytRPC.Test());
+            button.onClick.AddListener(() => Debug.Log("Plas"));
         }
     }
 }
