@@ -3,9 +3,9 @@ using System.IO;
 using UnityEngine;
 using HarmonyLib;
 using FMODUnity;
-using System.Reflection;
 using Debug = UnityEngine.Debug;
 using System.Threading.Tasks;
+using Unity.Netcode;
 
 namespace YTJukeboxMod {
     static public class ModPaths {
@@ -24,10 +24,49 @@ namespace YTJukeboxMod {
         }
     }
 
+    public class YtRPC : NetworkBehaviour {
+        private int playersDownloaded = 0;
+
+        [ServerRpc(RequireOwnership = false)]
+        public void TriggerDownloadServerRpc(string inputURL, ServerRpcParams serverRpcParams = default) {
+            if (!IsServer && !IsHost) {
+                return;
+            }
+
+            BroadcastDownloadClientRpc(inputURL);
+        }
+
+        [ClientRpc]
+        private void BroadcastDownloadClientRpc(string inputURL, ClientRpcParams clientRpcParams = default) {
+            StartDownloadFileAsync(inputURL);
+        }
+
+        private async void StartDownloadFileAsync(string inputURL) {
+            Debug.Log($"Download started on client for URL: {inputURL}");
+
+            await Download.GetCustomSong(inputURL);
+
+            NotifyDownloadCompleteServerRpc();
+        }
+
+        [ServerRpc(RequireOwnership = false)]
+        private void NotifyDownloadCompleteServerRpc(ServerRpcParams serverRpcParams = default) {
+            if (!IsServer && !IsHost) {
+                return;
+            }
+
+            playersDownloaded++;
+
+            if (playersDownloaded == PlayerManager.Instance.players.Count) {
+                Debug.Log("All players have completed the download.");
+            }
+        }
+    }
+
     [BepInPlugin("com.tomdom.ytjukebox", "YTJukebox", "1.0.0")]
     public class Plugin : BaseUnityPlugin {
         private static Plugin instance;
-
+        private static YtRPC ytRPCInstance;
         private void Awake() {
             instance = this;
             ModPaths.SetPaths();
@@ -46,10 +85,20 @@ namespace YTJukeboxMod {
             return instance;
         }
 
+        public static YtRPC GetYtRpcInstance() {
+            return ytRPCInstance;
+        }
+
         public void OnWorldLoad() {
             UI.CreateCustomUI();
             Audio.OnWorldLoad();
             AddEmptyTrack();
+
+            GameObject YtRPCManager = new GameObject("YTJukebox RPC Manager");
+            GameObject Common = GameObject.Find("Common");
+            YtRPCManager.transform.SetParent(Common.transform, false);
+            ytRPCInstance = YtRPCManager.AddComponent<YtRPC>();
+
         }
 
         private void Update() {

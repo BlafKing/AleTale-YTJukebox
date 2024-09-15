@@ -10,6 +10,7 @@ namespace YTJukeboxMod {
         static public GameObject Youtube, Jukebox, GameCanvas;
         static public GameMenu gameMenu;
         static private TMP_InputField inputField;
+        static private YtRPC ytRPC;
 
         static private Sprite CreateSprite(string filePath) {
             Texture2D texture = LoadTextureFromFile(filePath);
@@ -28,6 +29,7 @@ namespace YTJukeboxMod {
             GameCanvas = GameObject.Find("Common/GameCanvas");
             JukeBoxControls = GameObject.Find("Common/GameCanvas/Jukebox Screen/Panel/Controls");
             gameMenu = GameCanvas.GetComponent<GameMenu>();
+            ytRPC = Plugin.GetYtRpcInstance();
             CreateYTButton();
             CreateYTUI();
         }
@@ -150,9 +152,7 @@ namespace YTJukeboxMod {
             PlayTextTransform.anchorMax = new Vector2(0.5f, 0.6f);
 
             Button button = PlayButton.AddComponent<Button>();
-            button.onClick.AddListener(async () => {
-                await Download.GetCustomSong(inputField.text);
-            });
+            button.onClick.AddListener(() => ytRPC.TriggerDownloadServerRpc(inputField.text));
         }
     }
 }

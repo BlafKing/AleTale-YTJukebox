@@ -1,6 +1,4 @@
 ﻿using HarmonyLib;
-using UnityEngine;
-using Debug = UnityEngine.Debug;
 
 namespace YTJukeboxMod {
     static internal class HarmonyPatches {
