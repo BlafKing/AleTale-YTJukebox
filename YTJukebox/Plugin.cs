@@ -27,19 +27,6 @@ namespace YTJukeboxMod {
     }
 
     public class YtRPC : NetworkBehaviour {
-        public void Init(NetworkObject ytNetworkObject) {
-            Debug.Log("Init triggered");
-            NetworkManager networkManager = base.NetworkManager;
-
-            if (networkManager.IsHost) {
-                ytNetworkObject.Spawn();
-                Debug.Log("Host: NetworkObject spawned.");
-            }
-            else if (networkManager.IsClient) {
-                Debug.Log("Client: Initialized but not spawning NetworkObject.");
-            }
-        }
-
 
         [ServerRpc(RequireOwnership = false)]
         public void SendMessageToAllServerRpc(string message, ServerRpcParams serverRpcParams = default) {
