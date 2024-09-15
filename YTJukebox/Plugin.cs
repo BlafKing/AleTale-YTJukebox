@@ -42,8 +42,7 @@ namespace YTJukeboxMod {
     [BepInPlugin("com.tomdom.ytjukebox", "YTJukebox", "1.0.0")]
     public class Plugin : BaseUnityPlugin {
         private static Plugin instance;
-        private static GameObject ytRPCPrefab;
-        private static NetworkObject ytNetworkObject;
+
         private void Awake() {
             instance = this;
             ModPaths.SetPaths();
@@ -62,39 +61,17 @@ namespace YTJukeboxMod {
             return instance;
         }
 
-        public void CreatePrefab() {
-            GameObject SteamNetManager = GameObject.Find("SteamNetManager");
-            NetworkManager networkManager = SteamNetManager.GetComponent<NetworkManager>();
+        public void OnMenuLoad() {
 
-            ytRPCPrefab = new GameObject("YT-RPC");
-            ytRPCPrefab.AddComponent<YtRPC>();
-            ytNetworkObject = ytRPCPrefab.AddComponent<NetworkObject>();
-            Debug.Log("created new ytRPCPrefab GameObject with components");
-            networkManager.AddNetworkPrefab(ytRPCPrefab);
-            Debug.Log("Added ytRPCPrefab to NetworkPrefabs");
-            DontDestroyOnLoad(ytRPCPrefab);        }
+        }
 
         public void OnWorldLoad() {
             Audio.OnWorldLoad();
             AddEmptyTrack();
             UI.CreateCustomUI();
-
-            GameObject SteamNetManager = GameObject.Find("SteamNetManager");
-            NetworkManager networkManager = SteamNetManager.GetComponent<NetworkManager>();
-
-            if (networkManager.IsHost) {
-                ytNetworkObject.Spawn();
-            }
         }
 
         private void Update() {
-            if (Input.GetKeyDown(KeyCode.P)) {
-                GameObject YtRPCManager = GameObject.Find("YT-RPC");
-                YtRPC ytRPCInstance = YtRPCManager.GetComponent<YtRPC>();
-                ytRPCInstance.SendMessageToAllServerRpc("plasje van basje");
-            }
-
-
             if (UI.GameCanvas) {
                 if (Input.GetKeyDown(KeyCode.Escape)) {
                     if (UI.Youtube.activeSelf == true) {
