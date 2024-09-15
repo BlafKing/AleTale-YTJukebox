@@ -85,6 +85,7 @@ namespace YTJukeboxMod {
     public class Plugin : BaseUnityPlugin {
         private static Plugin instance;
         private static YtRPC ytRPCInstance;
+
         private void Awake() {
             instance = this;
             ModPaths.SetPaths();
