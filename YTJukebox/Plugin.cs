@@ -31,8 +31,8 @@ namespace YTJukeboxMod {
         public void TriggerDownloadServerRpc(string inputURL, ServerRpcParams serverRpcParams = default) {
             Debug.Log("TriggerDownloadServerRpc");
 
-            // Get the NetworkManager instance
-            NetworkManager networkManager = NetworkManager.Singleton;
+            // Get the base NetworkManager instance
+            NetworkManager networkManager = base.NetworkManager;
 
             // Ensure the network manager is valid and listening
             if (networkManager == null || !networkManager.IsListening) {
@@ -40,9 +40,9 @@ namespace YTJukeboxMod {
                 return;
             }
 
-            // Check if the current instance is the server or host
-            if (!networkManager.IsServer && !networkManager.IsHost) {
-                Debug.Log("User is not server nor host");
+            // Check if the current instance is the host or client
+            if (!networkManager.IsClient && !networkManager.IsHost) {
+                Debug.Log("User is neither client nor host");
                 return;
             }
 
@@ -70,8 +70,8 @@ namespace YTJukeboxMod {
         private void NotifyDownloadCompleteServerRpc(ServerRpcParams serverRpcParams = default) {
             Debug.Log("NotifyDownloadCompleteServerRpc");
 
-            // Get the NetworkManager instance
-            NetworkManager networkManager = NetworkManager.Singleton;
+            // Get the base NetworkManager instance
+            NetworkManager networkManager = base.NetworkManager;
 
             // Ensure the network manager is valid and listening
             if (networkManager == null || !networkManager.IsListening) {
@@ -79,9 +79,9 @@ namespace YTJukeboxMod {
                 return;
             }
 
-            // Check if the current instance is the server or host
-            if (!networkManager.IsServer && !networkManager.IsHost) {
-                Debug.Log("User is not server nor host");
+            // Check if the current instance is the host or client
+            if (!networkManager.IsClient && !networkManager.IsHost) {
+                Debug.Log("User is neither client nor host");
                 return;
             }
 
