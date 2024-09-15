@@ -6,7 +6,7 @@ using Debug = UnityEngine.Debug;
 
 namespace YTJukeboxMod {
     static internal class Audio {
-
+         
         static private IWavePlayer waveOut;
         static private MediaFoundationReader mediaReader;
         static private StereoVolumeSampleProvider stereoProvider;
