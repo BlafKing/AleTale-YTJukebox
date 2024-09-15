@@ -121,7 +121,6 @@ namespace YTJukeboxMod {
         }
 
         private void Update() {
-
             if (Input.GetKeyDown(KeyCode.P)) {
                 Debug.Log(PlayerManager.Instance.players.Count);
             }
