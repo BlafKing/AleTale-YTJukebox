@@ -109,9 +109,6 @@ namespace YTJukeboxMod {
         }
 
         private void Update() {
-            if (Input.GetKeyDown(KeyCode.P)) {
-                Debug.Log(PlayerManager.Instance.players.Count);
-            }
 
             if (UI.GameCanvas) {
                 if (Input.GetKeyDown(KeyCode.Escape)) {
