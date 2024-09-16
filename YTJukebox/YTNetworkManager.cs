@@ -29,14 +29,14 @@ namespace YTJukebox {
         private async void StartDownloadFileAsync(string inputURL, ulong JukeboxID) {
             Debug.Log($"Download started on client for URL: {inputURL}");
 
-            await Download.GetCustomSong(inputURL);
+            bool success = await Download.GetCustomSong(inputURL);
 
-            NotifyDownloadCompleteServerRpc(JukeboxID);
+            NotifyDownloadCompleteServerRpc(JukeboxID, success);
         }
 
         [ServerRpc(RequireOwnership = false)]
-        private void NotifyDownloadCompleteServerRpc(ulong JukeboxID) {
-            if (!IsServer && !IsHost) {
+        private void NotifyDownloadCompleteServerRpc(ulong JukeboxID, bool success) {
+            if (!IsServer && !IsHost || success == false) {
                 return;
             }
 

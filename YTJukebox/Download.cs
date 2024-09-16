@@ -72,10 +72,13 @@ namespace YTJukeboxMod {
             }
         }
 
-        static public async Task GetCustomSong(string URLInput) {
+        static public async Task<bool> GetCustomSong(string URLInput) {
+            if (!URLInput.StartsWith("http")) {
+                return false;
+            }
             if (lastURL != null && lastURL == URLInput) {
                 if (File.Exists(ModPaths.customSong)) {
-                    return;
+                    return true;
                 }
             }
 
@@ -108,9 +111,11 @@ namespace YTJukeboxMod {
                     lastURL = URLInput;
                     Debug.Log("yt-dlp finished successfully");
                     Debug.Log("Output: " + output);
+                    return true;
                 }
                 else {
                     Debug.LogError("yt-dlp encountered an error: " + error);
+                    return false;
                 }
             }
         }

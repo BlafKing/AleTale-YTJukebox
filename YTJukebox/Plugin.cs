@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using Unity.Netcode;
 using System.Reflection;
 using YTJukebox;
-using UnityEngine.UI;
 
 namespace YTJukeboxMod {
     static public class ModPaths {
