@@ -10,8 +10,8 @@ namespace YTJukeboxMod {
         static private IWavePlayer waveOut;
         static private MediaFoundationReader mediaReader;
         static private StereoVolumeSampleProvider stereoProvider;
-        static private GameObject activeJukebox;
-        static private Jukebox activeJukeboxComp;
+        static public GameObject activeJukebox;
+        static public Jukebox activeJukeboxComp;
         static private GameObject mainCamera;
         static public bool isPlaying = false;
         private static readonly float maxDistance = 80f;
@@ -30,7 +30,6 @@ namespace YTJukeboxMod {
         static public void SetActiveJukebox(Jukebox JukeboxComponent) {
             activeJukebox = JukeboxComponent.gameObject;
             activeJukeboxComp = JukeboxComponent;
-            ChangeVolume(activeJukeboxComp.volume.Value);
         }
 
         static public void StopCustomTrack() {
@@ -44,8 +43,10 @@ namespace YTJukeboxMod {
             }
         }
 
-        static public void PlayCustomTrack() {
-            activeJukeboxComp.PlayerPlayServerRpc(99);
+        static public void PlayCustomTrack(GameObject inputJukebox) {
+            Jukebox JukeboxComponent = inputJukebox.GetComponent<Jukebox>();
+            ChangeVolume(JukeboxComponent.volume.Value);
+            JukeboxComponent.PlayerPlayServerRpc(99);
             if (File.Exists(ModPaths.customSong)) {
                 if (isPlaying) {
                     StopCustomTrack();

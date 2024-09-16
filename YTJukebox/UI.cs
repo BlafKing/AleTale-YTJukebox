@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Linq;
 using TMPro;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
 using YTJukebox;
@@ -151,7 +152,10 @@ namespace YTJukeboxMod {
             PlayTextTransform.anchorMax = new Vector2(0.5f, 0.6f);
 
             Button button = PlayButton.AddComponent<Button>();
-            button.onClick.AddListener(() => YTNetworkManager.instance.TriggerDownloadServerRpc(inputField.text));
+
+            ulong JukeboxID = Audio.activeJukebox.GetComponent<NetworkObject>().NetworkObjectId;
+
+            button.onClick.AddListener(() => YTNetworkManager.instance.TriggerDownloadServerRpc(inputField.text, JukeboxID));
         }
     }
 }

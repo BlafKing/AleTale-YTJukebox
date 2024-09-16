@@ -75,7 +75,6 @@ namespace YTJukeboxMod {
         static public async Task GetCustomSong(string URLInput) {
             if (lastURL != null && lastURL == URLInput) {
                 if (File.Exists(ModPaths.customSong)) {
-                    Audio.PlayCustomTrack();
                     return;
                 }
             }

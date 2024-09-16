@@ -1,4 +1,5 @@
 ﻿using Unity.Netcode;
+using UnityEngine;
 using YTJukeboxMod;
 using Debug = UnityEngine.Debug;
 
@@ -12,29 +13,29 @@ namespace YTJukebox {
         }
 
         [ServerRpc(RequireOwnership = false)]
-        public void TriggerDownloadServerRpc(string inputURL, ServerRpcParams serverRpcParams = default) {
+        public void TriggerDownloadServerRpc(string inputURL, ulong JukeboxID) {
             if (!IsServer && !IsHost) {
                 return;
             }
 
-            BroadcastDownloadClientRpc(inputURL);
+            BroadcastDownloadClientRpc(inputURL, JukeboxID);
         }
 
         [ClientRpc]
-        private void BroadcastDownloadClientRpc(string inputURL, ClientRpcParams clientRpcParams = default) {
-            StartDownloadFileAsync(inputURL);
+        private void BroadcastDownloadClientRpc(string inputURL, ulong JukeboxID) {
+            StartDownloadFileAsync(inputURL, JukeboxID);
         }
 
-        private async void StartDownloadFileAsync(string inputURL) {
-            Debug.Log($"Download started on client for file: {inputURL}");
+        private async void StartDownloadFileAsync(string inputURL, ulong JukeboxID) {
+            Debug.Log($"Download started on client for URL: {inputURL}");
 
             await Download.GetCustomSong(inputURL);
 
-            NotifyDownloadCompleteServerRpc();
+            NotifyDownloadCompleteServerRpc(JukeboxID);
         }
 
         [ServerRpc(RequireOwnership = false)]
-        private void NotifyDownloadCompleteServerRpc(ServerRpcParams serverRpcParams = default) {
+        private void NotifyDownloadCompleteServerRpc(ulong JukeboxID) {
             if (!IsServer && !IsHost) {
                 return;
             }
@@ -44,7 +45,13 @@ namespace YTJukebox {
             if (playersDownloaded == PlayerManager.Instance.players.Count) {
                 Debug.Log("All players have completed the download.");
                 playersDownloaded = 0;
-                Audio.PlayCustomTrack();
+
+                NetworkObject jukeboxNetworkObject = NetworkManager.Singleton.SpawnManager.SpawnedObjects[JukeboxID];
+                if (jukeboxNetworkObject != null) {
+                    GameObject jukeboxGameObject = jukeboxNetworkObject.gameObject;
+                    Audio.PlayCustomTrack(jukeboxGameObject);
+                    
+                }
             }
         }
     }
