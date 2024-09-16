@@ -153,8 +153,6 @@ namespace YTJukeboxMod {
 
             Button button = PlayButton.AddComponent<Button>();
 
-            ulong JukeboxID = Audio.activeJukebox.GetComponent<NetworkObject>().NetworkObjectId;
-
             button.onClick.AddListener(() => {
                 if (Audio.activeJukebox != null) {
                     ulong currentJukeboxID = Audio.activeJukebox.GetComponent<NetworkObject>().NetworkObjectId;
