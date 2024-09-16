@@ -155,7 +155,15 @@ namespace YTJukeboxMod {
 
             ulong JukeboxID = Audio.activeJukebox.GetComponent<NetworkObject>().NetworkObjectId;
 
-            button.onClick.AddListener(() => YTNetworkManager.instance.TriggerDownloadServerRpc(inputField.text, JukeboxID));
+            button.onClick.AddListener(() => {
+                if (Audio.activeJukebox != null) {
+                    ulong currentJukeboxID = Audio.activeJukebox.GetComponent<NetworkObject>().NetworkObjectId;
+                    YTNetworkManager.instance.TriggerDownloadServerRpc(inputField.text, currentJukeboxID);
+                }
+                else {
+                    Debug.LogError("No active jukebox found when attempting to trigger download.");
+                }
+            });
         }
     }
 }
