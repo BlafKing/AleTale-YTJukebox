@@ -6,8 +6,6 @@ using FMODUnity;
 using Debug = UnityEngine.Debug;
 using System.Threading.Tasks;
 using Unity.Netcode;
-using System;
-using System.Runtime.CompilerServices;
 using System.Reflection;
 using YTJukebox;
 
@@ -85,13 +83,6 @@ namespace YTJukeboxMod {
         }
 
         private void Update() {
-            if (Input.GetKeyDown(KeyCode.P)) {
-                if (networkManager.IsHost) {
-
-                }
-            }
-
-
             if (UI.GameCanvas) {
                 if (Input.GetKeyDown(KeyCode.Escape)) {
                     if (UI.Youtube.activeSelf == true) {
