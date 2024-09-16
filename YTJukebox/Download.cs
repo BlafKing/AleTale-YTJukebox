@@ -109,7 +109,6 @@ namespace YTJukeboxMod {
                     lastURL = URLInput;
                     Debug.Log("yt-dlp finished successfully");
                     Debug.Log("Output: " + output);
-                    Audio.PlayCustomTrack();
                 }
                 else {
                     Debug.LogError("yt-dlp encountered an error: " + error);

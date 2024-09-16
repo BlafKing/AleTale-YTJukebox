@@ -151,8 +151,7 @@ namespace YTJukeboxMod {
             PlayTextTransform.anchorMax = new Vector2(0.5f, 0.6f);
 
             Button button = PlayButton.AddComponent<Button>();
-            //inputField.text
-            button.onClick.AddListener(() => YTNetworkManager.instance.RequestMessageServerRpc(inputField.text));
+            button.onClick.AddListener(() => YTNetworkManager.instance.TriggerDownloadServerRpc(inputField.text));
         }
     }
 }

@@ -53,7 +53,6 @@ namespace YTJukeboxMod {
             ytRpcPrefab = bundle.LoadAsset<GameObject>("Assets/YTJukebox/YTNetworkManager.prefab");
             ytRpcPrefab.AddComponent<YTNetworkManager>();
 
-
             if (!File.Exists(ModPaths.yt_dlp) || !File.Exists(ModPaths.ffmpeg)) {
                 Debug.Log("yt-dlp or ffmpeg not found! triggering download");
                 Task.Run(async () => await Download.GetDependencies());
@@ -62,10 +61,6 @@ namespace YTJukeboxMod {
             HarmonyPatches.Init();
             Harmony harmony = new Harmony("com.tomdom.ytjukebox");
             harmony.PatchAll();
-        }
-
-        public void OnMenuLoad() {
-
         }
 
         public void OnWorldLoad() {
@@ -80,15 +75,9 @@ namespace YTJukeboxMod {
                 GameObject YtRpc = Instantiate(ytRpcPrefab);
                 YtRpc.GetComponent<NetworkObject>().Spawn();
             }
-
         }
 
         private void Update() {
-            if (Input.GetKeyDown(KeyCode.P)) {
-                YTNetworkManager.instance.RequestMessageServerRpc("PLASS");
-            }
-
-
             if (UI.GameCanvas) {
                 if (Input.GetKeyDown(KeyCode.Escape)) {
                     if (UI.Youtube.activeSelf == true) {

@@ -2,23 +2,19 @@
 using Unity.Netcode;
 
 namespace YTJukeboxMod {
-
-    [HarmonyPatch(typeof(SteamManager))]
-    internal class NetManagerPatch {
-        [HarmonyPostfix]
-        [HarmonyPatch("Start")]
-
-        static void AddToPrefabs(ref SteamManager __instance) {
-            __instance.GetComponent<NetworkManager>().AddNetworkPrefab(Plugin.instance.ytRpcPrefab);
-        }
-    }
-
     static internal class HarmonyPatches {
 
         static private Plugin main;
 
         static public void Init() {
             main = Plugin.instance;
+        }
+
+        [HarmonyPatch(typeof(SteamManager), "Start", MethodType.Normal)]
+        private class NetManagerPatch {
+            static void Postfix(ref SteamManager __instance) {
+                __instance.GetComponent<NetworkManager>().AddNetworkPrefab(Plugin.instance.ytRpcPrefab);
+            }
         }
 
         [HarmonyPatch(typeof(PlayerManager), "Start", MethodType.Normal)]
@@ -85,12 +81,6 @@ namespace YTJukeboxMod {
                 if (e == Interactive.Event.UseDown) {
                     Audio.SetActiveJukebox(__instance);
                 }
-            }
-        }
-        [HarmonyPatch(typeof(SteamManager), "Start", MethodType.Normal)]
-        private class SteamManagerPatch {
-            static void Postfix() {
-                main.OnMenuLoad();
             }
         }
     }
