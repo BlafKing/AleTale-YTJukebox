@@ -1,12 +1,24 @@
 ﻿using HarmonyLib;
+using Unity.Netcode;
 
 namespace YTJukeboxMod {
+
+    [HarmonyPatch(typeof(SteamManager))]
+    internal class NetManagerPatch {
+        [HarmonyPostfix]
+        [HarmonyPatch("Start")]
+
+        static void AddToPrefabs(ref SteamManager __instance) {
+            __instance.GetComponent<NetworkManager>().AddNetworkPrefab(Plugin.instance.ytRpcPrefab);
+        }
+    }
+
     static internal class HarmonyPatches {
 
         static private Plugin main;
 
         static public void Init() {
-            main = Plugin.GetInstance();
+            main = Plugin.instance;
         }
 
         [HarmonyPatch(typeof(PlayerManager), "Start", MethodType.Normal)]

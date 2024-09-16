@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using Unity.Netcode;
 using System;
 using System.Runtime.CompilerServices;
+using System.Reflection;
+using YTJukebox;
 
 namespace YTJukeboxMod {
     static public class ModPaths {
@@ -26,27 +28,32 @@ namespace YTJukeboxMod {
         }
     }
 
-    public class YTJukeboxRPC : NetworkBehaviour {
-
-        [ServerRpc(RequireOwnership = false)]
-        public void SendMessageToAllServerRpc(string message, ServerRpcParams serverRpcParams = default) {
-            SendMessageToAllClientsRpc(message);
-        }
-
-        [ClientRpc]
-        private void SendMessageToAllClientsRpc(string message, ClientRpcParams clientRpcParams = default) {
-            Debug.Log("Message received by all players: " + message);
-        }
-    }
-
     [BepInPlugin("com.tomdom.ytjukebox", "YTJukebox", "1.0.0")]
     public class Plugin : BaseUnityPlugin {
-        private static Plugin instance;
-        private static YTJukeboxRPC ytRPC;
+        public static Plugin instance;
+        public GameObject ytRpcPrefab;
+        public NetworkManager networkManager;
 
         private void Awake() {
+            var types = Assembly.GetExecutingAssembly().GetTypes();
+            foreach (var type in types) {
+                var methods = type.GetMethods(BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static);
+                foreach (var method in methods) {
+                    var attributes = method.GetCustomAttributes(typeof(RuntimeInitializeOnLoadMethodAttribute), false);
+                    if (attributes.Length > 0) {
+                        method.Invoke(null, null);
+                    }
+                }
+            }
+
             instance = this;
             ModPaths.SetPaths();
+
+            string assetDir = Path.Combine(ModPaths.dependencies, "ytnetcode");
+            AssetBundle bundle = AssetBundle.LoadFromFile(assetDir);
+            ytRpcPrefab = bundle.LoadAsset<GameObject>("Assets/YTJukebox/YTNetworkManager.prefab");
+            ytRpcPrefab.AddComponent<YTNetworkManager>();
+
 
             if (!File.Exists(ModPaths.yt_dlp) || !File.Exists(ModPaths.ffmpeg)) {
                 Debug.Log("yt-dlp or ffmpeg not found! triggering download");
@@ -58,10 +65,6 @@ namespace YTJukeboxMod {
             harmony.PatchAll();
         }
 
-        public static Plugin GetInstance() {
-            return instance;
-        }
-
         public void OnMenuLoad() {
 
         }
@@ -70,12 +73,22 @@ namespace YTJukeboxMod {
             Audio.OnWorldLoad();
             AddEmptyTrack();
             UI.CreateCustomUI();
-            ytRPC = GameObject.Find("Common/Game").AddComponent<YTJukeboxRPC>();
+
+            GameObject SteamNetManager = GameObject.Find("SteamNetManager");
+            networkManager = SteamNetManager.GetComponent<NetworkManager>();
+
+            if (networkManager.IsHost) {
+                GameObject YtRpc = Instantiate(ytRpcPrefab);
+                YtRpc.GetComponent<NetworkObject>().Spawn();
+            }
+
         }
 
         private void Update() {
             if (Input.GetKeyDown(KeyCode.P)) {
-                ytRPC.SendMessageToAllServerRpc("Hello, World!");
+                if (networkManager.IsHost) {
+
+                }
             }
 
 

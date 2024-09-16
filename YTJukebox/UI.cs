@@ -3,6 +3,7 @@ using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using YTJukebox;
 
 namespace YTJukeboxMod {
     static internal class UI {
@@ -151,7 +152,7 @@ namespace YTJukeboxMod {
 
             Button button = PlayButton.AddComponent<Button>();
             //inputField.text
-            button.onClick.AddListener(() => Debug.Log("Plas"));
+            button.onClick.AddListener(() => YTNetworkManager.instance.RequestMessageServerRpc(inputField.text));
         }
     }
 }
