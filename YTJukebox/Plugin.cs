@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Unity.Netcode;
 using System.Reflection;
 using YTJukebox;
+using UnityEngine.UI;
 
 namespace YTJukeboxMod {
     static public class ModPaths {
@@ -83,6 +84,11 @@ namespace YTJukeboxMod {
         }
 
         private void Update() {
+            if (Input.GetKeyDown(KeyCode.P)) {
+                YTNetworkManager.instance.RequestMessageServerRpc("PLASS");
+            }
+
+
             if (UI.GameCanvas) {
                 if (Input.GetKeyDown(KeyCode.Escape)) {
                     if (UI.Youtube.activeSelf == true) {
