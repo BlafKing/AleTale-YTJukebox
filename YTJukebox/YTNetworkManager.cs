@@ -3,18 +3,23 @@ using UnityEngine;
 using YTJukeboxMod;
 using Debug = UnityEngine.Debug;
 
-namespace YTJukebox {
-    public class YTNetworkManager : NetworkBehaviour {
+namespace YTJukebox
+{
+    public class YTNetworkManager : NetworkBehaviour
+    {
         private int playersDownloaded = 0;
         public static YTNetworkManager instance;
 
-        void Awake() {
+        void Awake()
+        {
             instance = this;
         }
 
         [ServerRpc(RequireOwnership = false)]
-        public void TriggerDownloadServerRpc(string inputURL, ulong JukeboxID) {
-            if (!IsServer && !IsHost) {
+        public void TriggerDownloadServerRpc(string inputURL, ulong JukeboxID)
+        {
+            if (!IsServer && !IsHost)
+            {
                 return;
             }
 
@@ -22,11 +27,13 @@ namespace YTJukebox {
         }
 
         [ClientRpc]
-        private void BroadcastDownloadClientRpc(string inputURL, ulong JukeboxID) {
+        private void BroadcastDownloadClientRpc(string inputURL, ulong JukeboxID)
+        {
             StartDownloadFileAsync(inputURL, JukeboxID);
         }
 
-        private async void StartDownloadFileAsync(string inputURL, ulong JukeboxID) {
+        private async void StartDownloadFileAsync(string inputURL, ulong JukeboxID)
+        {
             Debug.Log($"Download started on client for URL: {inputURL}");
 
             bool success = await Download.GetCustomSong(inputURL);
@@ -35,23 +42,32 @@ namespace YTJukebox {
         }
 
         [ServerRpc(RequireOwnership = false)]
-        private void NotifyDownloadCompleteServerRpc(ulong JukeboxID, bool success) {
-            if (!IsServer && !IsHost || success == false) {
+        private void NotifyDownloadCompleteServerRpc(ulong JukeboxID, bool success)
+        {
+            if (!IsServer && !IsHost || success == false)
+            {
                 return;
             }
 
             playersDownloaded++;
 
-            if (playersDownloaded == PlayerManager.Instance.players.Count) {
+            if (playersDownloaded == PlayerManager.Instance.players.Count)
+            {
                 Debug.Log("All players have completed the download.");
                 playersDownloaded = 0;
+                PlayCustomTrackClientRpc(JukeboxID);
+            }
+        }
 
-                NetworkObject jukeboxNetworkObject = NetworkManager.Singleton.SpawnManager.SpawnedObjects[JukeboxID];
-                if (jukeboxNetworkObject != null) {
-                    GameObject jukeboxGameObject = jukeboxNetworkObject.gameObject;
-                    Audio.PlayCustomTrack(jukeboxGameObject);
-                    
-                }
+        [ClientRpc]
+        private void PlayCustomTrackClientRpc(ulong JukeboxID)
+        {
+            NetworkObject jukeboxNetworkObject = NetworkManager.Singleton.SpawnManager.SpawnedObjects[JukeboxID];
+
+            if (jukeboxNetworkObject != null)
+            {
+                GameObject jukeboxGameObject = jukeboxNetworkObject.gameObject;
+                Audio.PlayCustomTrack(jukeboxGameObject);
             }
         }
     }
