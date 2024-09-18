@@ -45,11 +45,7 @@ namespace YTJukeboxMod
         {
             static void Postfix()
             {
-                if (Audio.isPlaying)
-                {
-                    Audio.StopCustomTrack();
-                }
-
+                Audio.StopCustomTrack();
             }
         }
 
@@ -58,10 +54,7 @@ namespace YTJukeboxMod
         {
             static void Postfix()
             {
-                if (Audio.isPlaying)
-                {
-                    Audio.StopCustomTrack();
-                }
+                Audio.StopCustomTrack();
             }
         }
 
@@ -70,10 +63,7 @@ namespace YTJukeboxMod
         {
             static void Postfix()
             {
-                if (Audio.isPlaying)
-                {
-                    Audio.StopCustomTrack();
-                }
+                Audio.StopCustomTrack();
             }
         }
 
@@ -82,10 +72,7 @@ namespace YTJukeboxMod
         {
             static void Postfix()
             {
-                if (Audio.isPlaying)
-                {
-                    Audio.StopCustomTrack();
-                }
+                Audio.StopCustomTrack();
             }
         }
 

@@ -56,15 +56,27 @@ namespace YTJukebox
                 Debug.Log("All players have completed the download.");
                 playersDownloaded = 0;
                 PlayCustomTrackClientRpc(JukeboxID);
+                GameObject jukeboxGameObject = ReturnObjectFromID(JukeboxID);
+                Audio.PlayCustomTrack(jukeboxGameObject);
             }
         }
 
         [ClientRpc]
         private void PlayCustomTrackClientRpc(ulong JukeboxID)
         {
-            NetworkObject jukeboxNetworkObject = NetworkManager.Singleton.SpawnManager.SpawnedObjects[JukeboxID];
-            GameObject jukeboxGameObject = jukeboxNetworkObject.gameObject;
+            if (IsServer || IsHost)
+            {
+                return;
+            }
+            GameObject jukeboxGameObject = ReturnObjectFromID(JukeboxID);
             Audio.PlayCustomTrack(jukeboxGameObject);
+        }
+
+        private GameObject ReturnObjectFromID(ulong inputID)
+        {
+            NetworkObject foundNetworkObject = NetworkManager.Singleton.SpawnManager.SpawnedObjects[inputID];
+            GameObject outputGameObject = foundNetworkObject.gameObject;
+            return outputGameObject;
         }
     }
 }
