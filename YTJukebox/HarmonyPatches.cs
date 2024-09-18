@@ -36,7 +36,7 @@ namespace YTJukeboxMod
         {
             static void Postfix()
             {
-                //Audio.StopCustomTrack();
+                Audio.StopCustomTrack();
             }
         }
 
@@ -45,7 +45,7 @@ namespace YTJukeboxMod
         {
             static void Prefix()
             {
-                //Audio.StopCustomTrack();
+                Audio.StopCustomTrack();
             }
         }
 
@@ -54,7 +54,7 @@ namespace YTJukeboxMod
         {
             static void Prefix()
             {
-                //Audio.StopCustomTrack();
+                Audio.StopCustomTrack();
             }
         }
 
@@ -63,7 +63,7 @@ namespace YTJukeboxMod
         {
             static void Prefix()
             {
-                //Audio.StopCustomTrack();
+                Audio.StopCustomTrack();
             }
         }
 
@@ -72,7 +72,7 @@ namespace YTJukeboxMod
         {
             static void Prefix()
             {
-                //Audio.StopCustomTrack();
+                Audio.StopCustomTrack();
             }
         }
 
