@@ -6,25 +6,30 @@ using UnityEngine;
 using UnityEngine.UI;
 using YTJukebox;
 
-namespace YTJukeboxMod {
-    static internal class UI {
+namespace YTJukeboxMod
+{
+    static internal class UI
+    {
         static private GameObject JukeBoxControls;
         static public GameObject Youtube, Jukebox, GameCanvas;
         static public GameMenu gameMenu;
         static private TMP_InputField inputField;
 
-        static private Sprite CreateSprite(string filePath) {
+        static private Sprite CreateSprite(string filePath)
+        {
             Texture2D texture = LoadTextureFromFile(filePath);
             return texture != null ? Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f)) : null;
         }
 
-        static private Texture2D LoadTextureFromFile(string filePath) {
+        static private Texture2D LoadTextureFromFile(string filePath)
+        {
             if (!File.Exists(filePath)) return null;
             Texture2D texture = new Texture2D(2, 2);
             return texture.LoadImage(File.ReadAllBytes(filePath)) ? texture : null;
         }
 
-        static public void CreateCustomUI() {
+        static public void CreateCustomUI()
+        {
             Youtube = new GameObject("YoutubeUI");
             Jukebox = GameObject.Find("Common/GameCanvas/Jukebox Screen");
             GameCanvas = GameObject.Find("Common/GameCanvas");
@@ -34,7 +39,8 @@ namespace YTJukeboxMod {
             CreateYTUI();
         }
 
-        static private void CreateYTButton() {
+        static private void CreateYTButton()
+        {
             GameObject YtbButton = new GameObject("YtbButton");
             YtbButton.transform.SetParent(JukeBoxControls.transform, false);
 
@@ -53,14 +59,16 @@ namespace YTJukeboxMod {
             YtbIcon.GetComponent<RectTransform>().localPosition = Vector3.zero;
 
             Button button = YtbButton.AddComponent<Button>();
-            button.onClick.AddListener(() => {
+            button.onClick.AddListener(() =>
+            {
                 Jukebox.SetActive(false);
                 Youtube.SetActive(true);
                 gameMenu.enabled = false;
             });
         }
 
-        static private void CreateYTUI() {
+        static private void CreateYTUI()
+        {
             Youtube.transform.SetParent(GameCanvas.transform, false);
             Youtube.SetActive(false);
 
@@ -83,7 +91,8 @@ namespace YTJukeboxMod {
             CreatePlayButton(MainContainer);
         }
 
-        static private void CreateInputField(GameObject parent) {
+        static private void CreateInputField(GameObject parent)
+        {
             GameObject InputField = new GameObject("URLInputField");
             InputField.transform.SetParent(parent.transform, false);
             InputField.transform.localPosition = new Vector3(0, 50, 0);
@@ -126,7 +135,8 @@ namespace YTJukeboxMod {
             inputField.placeholder = placeholderText;
         }
 
-        static private void CreatePlayButton(GameObject parent) {
+        static private void CreatePlayButton(GameObject parent)
+        {
             GameObject PlayButton = new GameObject("PlayButton");
             PlayButton.transform.SetParent(parent.transform, false);
             PlayButton.transform.localPosition = new Vector3(0, -20, 0);
@@ -153,12 +163,15 @@ namespace YTJukeboxMod {
 
             Button button = PlayButton.AddComponent<Button>();
 
-            button.onClick.AddListener(() => {
-                if (Audio.activeJukebox != null) {
+            button.onClick.AddListener(() =>
+            {
+                if (Audio.activeJukebox != null)
+                {
                     ulong currentJukeboxID = Audio.activeJukebox.GetComponent<NetworkObject>().NetworkObjectId;
                     YTNetworkManager.instance.TriggerDownloadServerRpc(inputField.text, currentJukeboxID);
                 }
-                else {
+                else
+                {
                     Debug.LogError("No active jukebox found when attempting to trigger download.");
                 }
             });

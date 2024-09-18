@@ -4,9 +4,11 @@ using System.IO;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 
-namespace YTJukeboxMod {
-    static internal class Audio {
-         
+namespace YTJukeboxMod
+{
+    static internal class Audio
+    {
+
         static private IWavePlayer waveOut;
         static private MediaFoundationReader mediaReader;
         static private StereoVolumeSampleProvider stereoProvider;
@@ -16,9 +18,12 @@ namespace YTJukeboxMod {
         static public bool isPlaying = false;
         private static readonly float maxDistance = 80f;
 
-        static public void OnWorldLoad() {
-            if (waveOut == null) {
-                var waveOutEvent = new WaveOutEvent {
+        static public void OnWorldLoad()
+        {
+            if (waveOut == null)
+            {
+                var waveOutEvent = new WaveOutEvent
+                {
                     DesiredLatency = 50,
                     NumberOfBuffers = 8
                 };
@@ -27,13 +32,16 @@ namespace YTJukeboxMod {
             mainCamera = GameObject.Find("MainCamera");
         }
 
-        static public void SetActiveJukebox(Jukebox JukeboxComponent) {
+        static public void SetActiveJukebox(Jukebox JukeboxComponent)
+        {
             activeJukebox = JukeboxComponent.gameObject;
             activeJukeboxComp = JukeboxComponent;
         }
 
-        static public void StopCustomTrack() {
-            if (waveOut != null && mediaReader != null && isPlaying) {
+        static public void StopCustomTrack()
+        {
+            if (waveOut != null && mediaReader != null && isPlaying)
+            {
                 waveOut.Stop();
                 mediaReader.Dispose();
                 waveOut.Dispose();
@@ -43,19 +51,23 @@ namespace YTJukeboxMod {
             }
         }
 
-        static public void PlayCustomTrack(GameObject inputJukebox) {
+        static public void PlayCustomTrack(GameObject inputJukebox)
+        {
             Jukebox JukeboxComponent = inputJukebox.GetComponent<Jukebox>();
             activeJukebox = inputJukebox;
             activeJukeboxComp = JukeboxComponent;
             ChangeVolume(JukeboxComponent.volume.Value);
             JukeboxComponent.PlayerPlayServerRpc(99);
-            if (File.Exists(ModPaths.customSong)) {
-                if (isPlaying) {
+            if (File.Exists(ModPaths.customSong))
+            {
+                if (isPlaying)
+                {
                     StopCustomTrack();
                 }
 
                 mediaReader = new MediaFoundationReader(ModPaths.customSong);
-                stereoProvider = new StereoVolumeSampleProvider(mediaReader.ToSampleProvider()) {
+                stereoProvider = new StereoVolumeSampleProvider(mediaReader.ToSampleProvider())
+                {
                     LeftVolume = 1.0f,
                     RightVolume = 1.0f
                 };
@@ -67,15 +79,19 @@ namespace YTJukeboxMod {
             }
         }
 
-        static public void ChangeVolume(byte Volume) {
-            if (waveOut != null) {
+        static public void ChangeVolume(byte Volume)
+        {
+            if (waveOut != null)
+            {
                 float volumeLevel = Mathf.Clamp01(Volume / 100f);
                 waveOut.Volume = volumeLevel;
             }
         }
 
-        static public void UpdateAudioSpatial() {
-            if (waveOut != null && activeJukebox != null && mainCamera != null && isPlaying) {
+        static public void UpdateAudioSpatial()
+        {
+            if (waveOut != null && activeJukebox != null && mainCamera != null && isPlaying)
+            {
                 Vector3 playerPos = mainCamera.transform.position;
                 Vector3 jukeboxPos = activeJukebox.transform.position;
 
@@ -94,35 +110,43 @@ namespace YTJukeboxMod {
         }
     }
 
-    public class StereoVolumeSampleProvider : ISampleProvider {
+    public class StereoVolumeSampleProvider : ISampleProvider
+    {
         private readonly ISampleProvider source;
         private float leftVolume = 1.0f;
         private float rightVolume = 1.0f;
 
-        public StereoVolumeSampleProvider(ISampleProvider source) {
-            if (source.WaveFormat.Channels != 2) {
+        public StereoVolumeSampleProvider(ISampleProvider source)
+        {
+            if (source.WaveFormat.Channels != 2)
+            {
                 throw new ArgumentException("Source sample provider must be stereo");
             }
             this.source = source;
         }
 
-        public float LeftVolume {
+        public float LeftVolume
+        {
             get { return leftVolume; }
             set { leftVolume = Math.Max(0, Math.Min(1, value)); }
         }
 
-        public float RightVolume {
+        public float RightVolume
+        {
             get { return rightVolume; }
             set { rightVolume = Math.Max(0, Math.Min(1, value)); }
         }
 
-        public WaveFormat WaveFormat {
+        public WaveFormat WaveFormat
+        {
             get { return source.WaveFormat; }
         }
 
-        public int Read(float[] buffer, int offset, int count) {
+        public int Read(float[] buffer, int offset, int count)
+        {
             int samplesRead = source.Read(buffer, offset, count);
-            for (int i = 0; i < samplesRead; i += 2) {
+            for (int i = 0; i < samplesRead; i += 2)
+            {
                 buffer[offset + i] *= leftVolume;
                 buffer[offset + i + 1] *= rightVolume;
             }

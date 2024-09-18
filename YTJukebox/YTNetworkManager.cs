@@ -63,12 +63,8 @@ namespace YTJukebox
         private void PlayCustomTrackClientRpc(ulong JukeboxID)
         {
             NetworkObject jukeboxNetworkObject = NetworkManager.Singleton.SpawnManager.SpawnedObjects[JukeboxID];
-
-            if (jukeboxNetworkObject != null)
-            {
-                GameObject jukeboxGameObject = jukeboxNetworkObject.gameObject;
-                Audio.PlayCustomTrack(jukeboxGameObject);
-            }
+            GameObject jukeboxGameObject = jukeboxNetworkObject.gameObject;
+            Audio.PlayCustomTrack(jukeboxGameObject);
         }
     }
 }
