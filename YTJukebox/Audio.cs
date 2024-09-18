@@ -57,7 +57,7 @@ namespace YTJukeboxMod
             activeJukeboxComp = JukeboxComponent;
 
             ChangeVolume(JukeboxComponent.volume.Value);
-            JukeboxComponent.PlayTrack(99);
+            JukeboxComponent.PlayerPlayServerRpc(99);
 
             if (File.Exists(ModPaths.customSong))
             {

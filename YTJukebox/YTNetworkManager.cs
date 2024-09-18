@@ -42,6 +42,22 @@ namespace YTJukebox
         }
 
         [ServerRpc(RequireOwnership = false)]
+        public void StopTrackServerRpc()
+        {
+            if (!IsServer && !IsHost)
+            {
+                return;
+            }
+            StopTrackClientRpc();
+        }
+
+        [ClientRpc]
+        private void StopTrackClientRpc()
+        {
+            Audio.StopCustomTrack();
+        }
+
+        [ServerRpc(RequireOwnership = false)]
         private void NotifyDownloadCompleteServerRpc(ulong JukeboxID, bool success)
         {
             if (!IsServer && !IsHost || success == false)

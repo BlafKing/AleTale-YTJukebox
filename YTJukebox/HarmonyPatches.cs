@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using Unity.Netcode;
+using YTJukebox;
 
 namespace YTJukeboxMod
 {
@@ -36,31 +37,28 @@ namespace YTJukeboxMod
         {
             static void Postfix()
             {
-                Audio.StopCustomTrack();
+                YTNetworkManager.instance.StopTrackServerRpc();
             }
         }
 
         [HarmonyPatch(typeof(Jukebox), "PlayerPlayServerRpc", MethodType.Normal)]
-        private class StopPatch
+        private class PlayPatch
         {
-            static void Postfix()
+            static void Postfix(byte id)
             {
-                if (Audio.isPlaying)
+                if (Audio.isPlaying && id != 99)
                 {
-                    Audio.StopCustomTrack();
+                    YTNetworkManager.instance.StopTrackServerRpc();
                 }
             }
         }
 
         [HarmonyPatch(typeof(Jukebox), "PlayerStopServerRpc", MethodType.Normal)]
-        private class PlayPatch
+        private class StopPatch
         {
             static void Postfix()
             {
-                if (Audio.isPlaying)
-                {
-                    Audio.StopCustomTrack();
-                }
+                YTNetworkManager.instance.StopTrackServerRpc();
             }
         }
 
@@ -71,7 +69,7 @@ namespace YTJukeboxMod
             {
                 if (Audio.isPlaying)
                 {
-                    Audio.StopCustomTrack();
+                    YTNetworkManager.instance.StopTrackServerRpc();
                 }
             }
         }
@@ -83,7 +81,7 @@ namespace YTJukeboxMod
             {
                 if (Audio.isPlaying)
                 {
-                    Audio.StopCustomTrack();
+                    YTNetworkManager.instance.StopTrackServerRpc();
                 }
             }
         }
