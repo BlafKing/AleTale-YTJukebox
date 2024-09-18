@@ -56,8 +56,6 @@ namespace YTJukebox
                 Debug.Log("All players have completed the download.");
                 playersDownloaded = 0;
                 PlayCustomTrackClientRpc(JukeboxID);
-                GameObject jukeboxGameObject = ReturnObjectFromID(JukeboxID);
-                Audio.PlayCustomTrack(jukeboxGameObject);
             }
         }
 
