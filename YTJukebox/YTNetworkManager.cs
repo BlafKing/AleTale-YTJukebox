@@ -41,20 +41,16 @@ namespace YTJukebox
             NotifyDownloadCompleteServerRpc(JukeboxID, success);
         }
 
-        [ServerRpc(RequireOwnership = false)]
-        public void StopTrackServerRpc()
+        [ClientRpc]
+        public void StopTrackClientRpc()
         {
-            if (!IsServer && !IsHost)
-            {
-                return;
-            }
-            StopTrackClientRpc();
+            Audio.StopCustomTrack();
         }
 
         [ClientRpc]
-        private void StopTrackClientRpc()
+        public void ChangeVolumeClientRpc(byte v)
         {
-            Audio.StopCustomTrack();
+            Audio.ChangeVolume(v);
         }
 
         [ServerRpc(RequireOwnership = false)]
@@ -82,9 +78,25 @@ namespace YTJukebox
             Audio.PlayCustomTrack(jukeboxGameObject);
         }
 
-        private GameObject ReturnObjectFromID(ulong inputID)
+        [ClientRpc]
+        public void SetSyncClientRpc(ulong JukeboxID, bool input)
         {
-            NetworkObject foundNetworkObject = NetworkManager.Singleton.SpawnManager.SpawnedObjects[inputID];
+            if (input == true)
+            {
+                Audio.jukeboxList.Clear();
+                Audio.jukeboxList = Audio.GetAllJukeboxes();
+            }
+            else
+            {
+                GameObject jukeBoxObject = ReturnObjectFromID(JukeboxID);
+                Audio.jukeboxList.Clear();
+                Audio.jukeboxList.Add(jukeBoxObject);
+            }
+        }
+
+        private GameObject ReturnObjectFromID(ulong JukeboxID)
+        {
+            NetworkObject foundNetworkObject = NetworkManager.Singleton.SpawnManager.SpawnedObjects[JukeboxID];
             GameObject outputGameObject = foundNetworkObject.gameObject;
             return outputGameObject;
         }

@@ -1,6 +1,8 @@
 ﻿using HarmonyLib;
 using Unity.Netcode;
+using UnityEngine;
 using YTJukebox;
+using Debug = UnityEngine.Debug;
 
 namespace YTJukeboxMod
 {
@@ -37,7 +39,7 @@ namespace YTJukeboxMod
         {
             static void Postfix()
             {
-                YTNetworkManager.instance.StopTrackServerRpc();
+                YTNetworkManager.instance.StopTrackClientRpc();
             }
         }
 
@@ -48,7 +50,7 @@ namespace YTJukeboxMod
             {
                 if (Audio.isPlaying && id != 99)
                 {
-                    YTNetworkManager.instance.StopTrackServerRpc();
+                    YTNetworkManager.instance.StopTrackClientRpc();
                 }
             }
         }
@@ -58,7 +60,7 @@ namespace YTJukeboxMod
         {
             static void Postfix()
             {
-                YTNetworkManager.instance.StopTrackServerRpc();
+                YTNetworkManager.instance.StopTrackClientRpc();
             }
         }
 
@@ -69,7 +71,7 @@ namespace YTJukeboxMod
             {
                 if (Audio.isPlaying)
                 {
-                    YTNetworkManager.instance.StopTrackServerRpc();
+                    YTNetworkManager.instance.StopTrackClientRpc();
                 }
             }
         }
@@ -81,7 +83,7 @@ namespace YTJukeboxMod
             {
                 if (Audio.isPlaying)
                 {
-                    YTNetworkManager.instance.StopTrackServerRpc();
+                    YTNetworkManager.instance.StopTrackClientRpc();
                 }
             }
         }
@@ -91,7 +93,7 @@ namespace YTJukeboxMod
         {
             static void Postfix(byte v)
             {
-                Audio.ChangeVolume(v);
+                YTNetworkManager.instance.ChangeVolumeClientRpc(v);
             }
         }
 
@@ -104,6 +106,16 @@ namespace YTJukeboxMod
                 {
                     Audio.SetActiveJukebox(__instance);
                 }
+            }
+        }
+        [HarmonyPatch(typeof(Jukebox), "PlayerSyncServerRpc", MethodType.Normal)]
+        private class SyncPatch
+        {
+            static void Postfix(Jukebox __instance, bool v)
+            {
+                GameObject currentJukebox = __instance.gameObject;
+                ulong jukeboxID = currentJukebox.GetComponent<NetworkObject>().NetworkObjectId;
+                YTNetworkManager.instance.SetSyncClientRpc(jukeboxID, v);
             }
         }
     }
