@@ -62,10 +62,6 @@ namespace YTJukebox
         [ClientRpc]
         private void PlayCustomTrackClientRpc(ulong JukeboxID)
         {
-            if (IsServer || IsHost)
-            {
-                return;
-            }
             GameObject jukeboxGameObject = ReturnObjectFromID(JukeboxID);
             Audio.PlayCustomTrack(jukeboxGameObject);
         }
