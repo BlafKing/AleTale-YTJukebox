@@ -4,7 +4,6 @@ using System.IO;
 using UnityEngine;
 using System.Collections.Generic;
 using System.Reflection;
-using Debug = UnityEngine.Debug;
 
 namespace YTJukeboxMod
 {
@@ -17,7 +16,6 @@ namespace YTJukeboxMod
         static public GameObject activeJukebox;
         static public List<GameObject> jukeboxList;
         static private GameObject mainCamera;
-        static public bool isPlaying = false;
         private static readonly float maxDistance = 80f;
 
         static public void OnWorldLoad()
@@ -42,13 +40,12 @@ namespace YTJukeboxMod
 
         static public void StopCustomTrack()
         {
-            if (waveOut != null && mediaReader != null && isPlaying)
+            if (waveOut != null && mediaReader != null)
             {
                 waveOut.Stop();
                 mediaReader.Dispose();
                 waveOut.Dispose();
-                isPlaying = false;
-                Debug.Log("Track stopped.");
+                Log.Info("Track stopped.");
             }
         }
 
@@ -63,10 +60,7 @@ namespace YTJukeboxMod
 
             if (File.Exists(ModPaths.customSong))
             {
-                if (isPlaying)
-                {
-                    StopCustomTrack();
-                }
+                StopCustomTrack();
 
                 mediaReader = new MediaFoundationReader(ModPaths.customSong);
                 stereoProvider = new StereoVolumeSampleProvider(mediaReader.ToSampleProvider())
@@ -78,7 +72,6 @@ namespace YTJukeboxMod
                 waveOut.Init(stereoProvider);
                 waveOut.Play();
 
-                isPlaying = true;
             }
         }
 
@@ -93,11 +86,10 @@ namespace YTJukeboxMod
 
         static public void UpdateAudioSpatial()
         {
-            if (mainCamera != null && isPlaying && jukeboxList != null && jukeboxList.Count > 0)
+            if (mainCamera != null && jukeboxList.Count > 0)
             {
                 Vector3 playerPos = mainCamera.transform.position;
 
-                // Initialize variables to hold the final combined volumes for the left and right channels
                 float totalLeftVolume = 0f;
                 float totalRightVolume = 0f;
 
@@ -112,21 +104,17 @@ namespace YTJukeboxMod
                         float distanceRatio = Mathf.Clamp01((distance - 2.0f) / (maxDistance - 2.0f));
                         float volume = Mathf.Pow(1 - distanceRatio, 10f) * (jukeboxComp.volume.Value / 100f);
 
-                        // Calculate pan based on the direction to the player
                         Vector3 directionToPlayer = (playerPos - jukeboxPos).normalized;
                         float pan = Vector3.Dot(directionToPlayer, mainCamera.transform.right);
 
-                        // Calculate the contribution of this jukebox to the left and right channels
-                        float leftVolume = volume * Mathf.Clamp01(1f - pan);  // Less pan -> more left volume
-                        float rightVolume = volume * Mathf.Clamp01(1f + pan); // More pan -> more right volume
+                        float leftVolume = volume * Mathf.Clamp01(1f - pan);
+                        float rightVolume = volume * Mathf.Clamp01(1f + pan);
 
-                        // Accumulate the volumes for the left and right channels
                         totalLeftVolume = Mathf.Clamp01(totalLeftVolume + leftVolume);
                         totalRightVolume = Mathf.Clamp01(totalRightVolume + rightVolume);
                     }
                 }
 
-                // Set the final volumes for the stereo channels
                 stereoProvider.LeftVolume = totalLeftVolume;
                 stereoProvider.RightVolume = totalRightVolume;
             }

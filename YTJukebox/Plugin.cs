@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using Unity.Netcode;
 using UnityEngine;
 using YTJukebox;
-using Debug = UnityEngine.Debug;
 
 namespace YTJukeboxMod
 {
@@ -51,7 +50,6 @@ namespace YTJukeboxMod
                     }
                 }
             }
-
             instance = this;
             ModPaths.SetPaths();
 
@@ -59,10 +57,9 @@ namespace YTJukeboxMod
             AssetBundle bundle = AssetBundle.LoadFromFile(assetDir);
             ytRpcPrefab = bundle.LoadAsset<GameObject>("Assets/YTJukebox/YTNetworkManager.prefab");
             ytRpcPrefab.AddComponent<YTNetworkManager>();
-
             if (!File.Exists(ModPaths.yt_dlp) || !File.Exists(ModPaths.ffmpeg))
             {
-                Debug.Log("yt-dlp or ffmpeg not found! triggering download");
+                Log.Info("yt-dlp or ffmpeg not found! triggering download");
                 Task.Run(async () => await Download.GetDependencies());
             }
 
@@ -122,5 +119,14 @@ namespace YTJukeboxMod
                 });
             }
         }
+        public void LogInfo(string message) {Logger.LogInfo(message);}
+        public void LogError(string message) {Logger.LogError(message);}
+        public void LogWarning(string message) {Logger.LogWarning(message);}
+    }
+    static public class Log
+    {
+        static public void Info(string message) {Plugin.instance.LogInfo(message);}
+        static public void Error(string message) {Plugin.instance.LogError(message);}
+        static public void Warning(string message) {Plugin.instance.LogWarning(message);}
     }
 }

@@ -172,7 +172,7 @@ namespace YTJukeboxMod
                 }
                 else
                 {
-                    Debug.LogError("No active jukebox found when attempting to trigger download.");
+                    Log.Error("No active jukebox found when attempting to trigger download.");
                 }
             });
         }

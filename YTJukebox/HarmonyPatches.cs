@@ -2,7 +2,6 @@
 using Unity.Netcode;
 using UnityEngine;
 using YTJukebox;
-using Debug = UnityEngine.Debug;
 
 namespace YTJukeboxMod
 {
@@ -48,7 +47,7 @@ namespace YTJukeboxMod
         {
             static void Postfix(byte id)
             {
-                if (Audio.isPlaying && id != 99)
+                if (id != 99)
                 {
                     YTNetworkManager.instance.StopTrackClientRpc();
                 }
@@ -69,10 +68,7 @@ namespace YTJukeboxMod
         {
             static void Postfix()
             {
-                if (Audio.isPlaying)
-                {
-                    YTNetworkManager.instance.StopTrackClientRpc();
-                }
+                YTNetworkManager.instance.StopTrackClientRpc();
             }
         }
 
@@ -81,10 +77,7 @@ namespace YTJukeboxMod
         {
             static void Postfix()
             {
-                if (Audio.isPlaying)
-                {
-                    YTNetworkManager.instance.StopTrackClientRpc();
-                }
+                YTNetworkManager.instance.StopTrackClientRpc();
             }
         }
 
@@ -104,7 +97,7 @@ namespace YTJukeboxMod
             {
                 if (e == Interactive.Event.UseDown)
                 {
-                    Audio.SetActiveJukebox(__instance);
+                    Audio.activeJukebox = __instance.gameObject;
                 }
             }
         }

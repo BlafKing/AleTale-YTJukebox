@@ -5,7 +5,6 @@ using System.IO.Compression;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using Debug = UnityEngine.Debug;
 
 namespace YTJukeboxMod
 {
@@ -26,16 +25,16 @@ namespace YTJukeboxMod
         {
             try
             {
-                Debug.Log("Downloading yt-dlp...");
+                Log.Info("Downloading yt-dlp...");
                 using (WebClient webClient = new WebClient())
                 {
                     await webClient.DownloadFileTaskAsync(new Uri(ytDlpURL), ModPaths.yt_dlp);
                 }
-                Debug.Log("yt-dlp downloaded successfully!");
+                Log.Info("yt-dlp downloaded successfully!");
             }
             catch (Exception ex)
             {
-                Debug.LogError("Failed to download yt-dlp: " + ex.Message);
+                Log.Error("Failed to download yt-dlp: " + ex.Message);
             }
         }
 
@@ -44,12 +43,12 @@ namespace YTJukeboxMod
             try
             {
                 string ffmpegTempZipPath = Path.Combine(ModPaths.dependencies, "ffmpeg.zip");
-                Debug.Log("Downloading ffmpeg...");
+                Log.Info("Downloading ffmpeg...");
                 using (WebClient webClient = new WebClient())
                 {
                     await webClient.DownloadFileTaskAsync(new Uri(ffmpegURL), ffmpegTempZipPath);
                 }
-                Debug.Log("ffmpeg downloaded successfully!");
+                Log.Info("ffmpeg downloaded successfully!");
 
                 await Task.Run(() => ExtractFfmpeg(ffmpegTempZipPath, ModPaths.dependencies));
 
@@ -57,7 +56,7 @@ namespace YTJukeboxMod
             }
             catch (Exception ex)
             {
-                Debug.LogError("Failed to download ffmpeg: " + ex.Message);
+                Log.Error("Failed to download ffmpeg: " + ex.Message);
             }
         }
 
@@ -65,7 +64,7 @@ namespace YTJukeboxMod
         {
             try
             {
-                Debug.Log("Extracting ffmpeg...");
+                Log.Info("Extracting ffmpeg...");
 
                 using (ZipArchive archive = ZipFile.OpenRead(zipPath))
                 {
@@ -75,17 +74,17 @@ namespace YTJukeboxMod
                         string destinationPath = Path.Combine(extractPath, "ffmpeg.exe");
 
                         ffmpegEntry.ExtractToFile(destinationPath, true);
-                        Debug.Log("ffmpeg.exe extracted successfully!");
+                        Log.Info("ffmpeg.exe extracted successfully!");
                     }
                     else
                     {
-                        Debug.LogError("ffmpeg.exe not found in the zip archive!");
+                        Log.Error("ffmpeg.exe not found in the zip archive!");
                     }
                 }
             }
             catch (Exception ex)
             {
-                Debug.LogError("Failed to extract ffmpeg: " + ex.Message);
+                Log.Error("Failed to extract ffmpeg: " + ex.Message);
             }
         }
 
@@ -103,7 +102,7 @@ namespace YTJukeboxMod
                 }
             }
 
-            Debug.Log("Play button pressed with URL: " + URLInput);
+            Log.Info("Play button pressed with URL: " + URLInput);
 
             if (File.Exists(ModPaths.customSong))
             {
@@ -134,13 +133,13 @@ namespace YTJukeboxMod
                 if (exitCode == 0)
                 {
                     lastURL = URLInput;
-                    Debug.Log("yt-dlp finished successfully");
-                    Debug.Log("Output: " + output);
+                    Log.Info("yt-dlp finished successfully");
+                    Log.Info("Output: " + output);
                     return true;
                 }
                 else
                 {
-                    Debug.LogError("yt-dlp encountered an error: " + error);
+                    Log.Error("yt-dlp encountered an error: " + error);
                     return false;
                 }
             }

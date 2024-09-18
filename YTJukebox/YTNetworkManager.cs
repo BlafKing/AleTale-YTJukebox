@@ -1,7 +1,6 @@
 ﻿using Unity.Netcode;
 using UnityEngine;
 using YTJukeboxMod;
-using Debug = UnityEngine.Debug;
 
 namespace YTJukebox
 {
@@ -34,7 +33,7 @@ namespace YTJukebox
 
         private async void StartDownloadFileAsync(string inputURL, ulong JukeboxID)
         {
-            Debug.Log($"Download started on client for URL: {inputURL}");
+            Log.Info($"Download started on client for URL: {inputURL}");
 
             bool success = await Download.GetCustomSong(inputURL);
 
@@ -65,7 +64,7 @@ namespace YTJukebox
 
             if (playersDownloaded == PlayerManager.Instance.players.Count)
             {
-                Debug.Log("All players have completed the download.");
+                Log.Info("All players have completed the download.");
                 playersDownloaded = 0;
                 PlayCustomTrackClientRpc(JukeboxID);
             }
