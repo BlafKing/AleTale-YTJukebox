@@ -43,43 +43,55 @@ namespace YTJukeboxMod
         [HarmonyPatch(typeof(Jukebox), "PlayerPlayServerRpc", MethodType.Normal)]
         private class StopPatch
         {
-            static void Prefix()
+            static void Postfix()
             {
-                Audio.StopCustomTrack();
+                if (Audio.isPlaying)
+                {
+                    Audio.StopCustomTrack();
+                }
             }
         }
 
         [HarmonyPatch(typeof(Jukebox), "PlayerStopServerRpc", MethodType.Normal)]
         private class PlayPatch
         {
-            static void Prefix()
+            static void Postfix()
             {
-                Audio.StopCustomTrack();
+                if (Audio.isPlaying)
+                {
+                    Audio.StopCustomTrack();
+                }
             }
         }
 
         [HarmonyPatch(typeof(Jukebox), "PlayerNextServerRpc", MethodType.Normal)]
         private class NextPatch
         {
-            static void Prefix()
+            static void Postfix()
             {
-                Audio.StopCustomTrack();
+                if (Audio.isPlaying)
+                {
+                    Audio.StopCustomTrack();
+                }
             }
         }
 
         [HarmonyPatch(typeof(Jukebox), "PlayerPreviousServerRpc", MethodType.Normal)]
         private class PrevPatch
         {
-            static void Prefix()
+            static void Postfix()
             {
-                Audio.StopCustomTrack();
+                if (Audio.isPlaying)
+                {
+                    Audio.StopCustomTrack();
+                }
             }
         }
 
         [HarmonyPatch(typeof(Jukebox), "PlayerVolumeServerRpc", MethodType.Normal)]
         private class VolumePatch
         {
-            static void Prefix(byte v)
+            static void Postfix(byte v)
             {
                 Audio.ChangeVolume(v);
             }
