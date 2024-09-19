@@ -4,6 +4,8 @@ using System.IO;
 using UnityEngine;
 using System.Collections.Generic;
 using System.Reflection;
+using Object = UnityEngine.Object;
+using Unity.Netcode;
 
 namespace YTJukeboxMod
 {
@@ -15,7 +17,7 @@ namespace YTJukeboxMod
         static private StereoVolumeSampleProvider stereoProvider;
         static public GameObject activeJukebox;
         static public List<GameObject> jukeboxList;
-        static private GameObject mainCamera;
+        static private GameObject localPlayer;
         private static readonly float maxDistance = 80f;
 
         static public void OnWorldLoad()
@@ -29,7 +31,16 @@ namespace YTJukeboxMod
                 };
                 waveOut = waveOutEvent;
             }
-            mainCamera = GameObject.Find("MainCamera");
+            PlayerNet[] players = Object.FindObjectsOfType<PlayerNet>();
+            foreach (PlayerNet playerNet in players)
+            {
+                NetworkBehaviour networkBehaviour = playerNet.GetComponent<NetworkBehaviour>();
+                if (networkBehaviour != null && networkBehaviour.IsOwner)
+                {
+                    localPlayer = playerNet.gameObject;
+                }
+            }
+
             jukeboxList = new List<GameObject>();
         }
 
@@ -86,9 +97,9 @@ namespace YTJukeboxMod
 
         static public void UpdateAudioSpatial()
         {
-            if (mainCamera != null && jukeboxList.Count > 0)
+            if (localPlayer != null && jukeboxList.Count > 0)
             {
-                Vector3 playerPos = mainCamera.transform.position;
+                Vector3 playerPos = localPlayer.transform.position;
 
                 float totalLeftVolume = 0f;
                 float totalRightVolume = 0f;
@@ -105,7 +116,7 @@ namespace YTJukeboxMod
                         float volume = Mathf.Pow(1 - distanceRatio, 10f) * (jukeboxComp.volume.Value / 100f);
 
                         Vector3 directionToPlayer = (playerPos - jukeboxPos).normalized;
-                        float pan = Vector3.Dot(directionToPlayer, mainCamera.transform.right);
+                        float pan = Vector3.Dot(directionToPlayer, localPlayer.transform.right);
 
                         float leftVolume = volume * Mathf.Clamp01(1f - pan);
                         float rightVolume = volume * Mathf.Clamp01(1f + pan);
