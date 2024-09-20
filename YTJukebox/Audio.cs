@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using Object = UnityEngine.Object;
 using Unity.Netcode;
+using System.Threading.Tasks;
 
 namespace YTJukeboxMod
 {
@@ -17,7 +18,7 @@ namespace YTJukeboxMod
         static private StereoVolumeSampleProvider stereoProvider;
         static public GameObject activeJukebox;
         static public List<GameObject> jukeboxList;
-        static private GameObject localPlayer;
+        static public GameObject localPlayer;
         private static readonly float maxDistance = 80f;
 
         static public void OnWorldLoad()
@@ -31,15 +32,10 @@ namespace YTJukeboxMod
                 };
                 waveOut = waveOutEvent;
             }
-            PlayerNet[] players = Object.FindObjectsOfType<PlayerNet>();
-            foreach (PlayerNet playerNet in players)
+            GetLocalPlayer().ContinueWith(task =>
             {
-                NetworkBehaviour networkBehaviour = playerNet.GetComponent<NetworkBehaviour>();
-                if (networkBehaviour != null && networkBehaviour.IsOwner)
-                {
-                    localPlayer = playerNet.gameObject;
-                }
-            }
+                localPlayer = task.Result;
+            });
 
             jukeboxList = new List<GameObject>();
         }
@@ -151,6 +147,30 @@ namespace YTJukeboxMod
                 }
             }
             return jukeboxGameObjects;
+        }
+
+        static public async Task<GameObject> GetLocalPlayer()
+        {
+            PlayerNet[] players;
+            GameObject localPlayer = null;
+            while (localPlayer == null)
+            {
+                players = Object.FindObjectsOfType<PlayerNet>();
+                foreach (PlayerNet playerNet in players)
+                {
+                    NetworkBehaviour networkBehaviour = playerNet.GetComponent<NetworkBehaviour>();
+                    if (networkBehaviour != null && networkBehaviour.IsOwner)
+                    {
+                        localPlayer = playerNet.gameObject;
+                        break;
+                    }
+                }
+                if (localPlayer == null)
+                {
+                    await Task.Delay(500);
+                }
+            }
+            return localPlayer;
         }
     }
 
