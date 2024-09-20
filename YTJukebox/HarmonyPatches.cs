@@ -38,8 +38,7 @@ namespace YTJukeboxMod
         {
             static void Postfix()
             {
-                Log.Info("SteamManager Disconnect triggered");
-                YTNetworkManager.instance.StopTrackClientRpc();
+                Audio.StopCustomTrack();
             }
         }
 
