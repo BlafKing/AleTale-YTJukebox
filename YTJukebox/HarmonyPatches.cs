@@ -59,7 +59,10 @@ namespace YTJukeboxMod
         {
             static void Postfix()
             {
-                YTNetworkManager.instance.StopTrackClientRpc();
+                if (!YTNetworkManager.skipStop)
+                {
+                    YTNetworkManager.instance.StopTrackClientRpc();
+                }
             }
         }
 
