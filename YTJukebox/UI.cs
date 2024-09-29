@@ -139,7 +139,7 @@ namespace YTJukeboxMod
         {
             GameObject PlayButton = new GameObject("PlayButton");
             PlayButton.transform.SetParent(parent.transform, false);
-            PlayButton.transform.localPosition = new Vector3(0, -20, 0);
+            PlayButton.transform.localPosition = new Vector3(0, -45, 0);
 
             Image ButtonImage = PlayButton.AddComponent<Image>();
             ButtonImage.sprite = Resources.FindObjectsOfTypeAll<Sprite>().FirstOrDefault(s => s.name == "btn_rectangle_01_n_bluegray");
@@ -162,7 +162,7 @@ namespace YTJukeboxMod
             PlayTextTransform.anchorMax = new Vector2(0.5f, 0.6f);
 
             Button button = PlayButton.AddComponent<Button>();
-
+            
             button.onClick.AddListener(() =>
             {
                 if (Audio.activeJukebox != null)

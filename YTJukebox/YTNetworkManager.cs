@@ -1,6 +1,8 @@
 ﻿using Unity.Netcode;
 using UnityEngine;
 using YTJukeboxMod;
+using System.Collections.Generic;
+using static SavedDevice;
 
 namespace YTJukebox
 {
@@ -8,10 +10,12 @@ namespace YTJukebox
     {
         private int playersDownloaded = 0;
         public static YTNetworkManager instance;
+        public static bool skipStop;
 
         void Awake()
         {
             instance = this;
+            skipStop = false;
         }
 
         [ServerRpc(RequireOwnership = false)]
@@ -80,17 +84,40 @@ namespace YTJukebox
         [ClientRpc]
         public void SetSyncClientRpc(ulong JukeboxID, bool input)
         {
+            List<GameObject> allJukeboxes = Audio.GetAllJukeboxes();
+            skipStop = true;
             if (input == true)
             {
+                foreach (GameObject jukeboxObject in allJukeboxes)
+                {
+                    Jukebox jukebox = jukeboxObject.GetComponent<Jukebox>();
+                    jukebox.PlayerStopServerRpc();
+                }
+                foreach (GameObject jukeboxObject in Audio.jukeboxList)
+                {
+                    Jukebox jukebox = jukeboxObject.GetComponent<Jukebox>();
+                    jukebox.PlayerPlayServerRpc(99);
+                }
                 Audio.jukeboxList.Clear();
-                Audio.jukeboxList = Audio.GetAllJukeboxes();
+                Audio.jukeboxList = allJukeboxes;
             }
             else
             {
+                foreach (GameObject jukeboxObject in allJukeboxes)
+                {
+                    Jukebox jukebox = jukeboxObject.GetComponent<Jukebox>();
+                    jukebox.PlayerStopServerRpc();
+                }
+                foreach (GameObject jukeboxObject in Audio.jukeboxList)
+                {
+                    Jukebox jukebox = jukeboxObject.GetComponent<Jukebox>();
+                    jukebox.PlayerPlayServerRpc(99);
+                }
                 GameObject jukeBoxObject = ReturnObjectFromID(JukeboxID);
                 Audio.jukeboxList.Clear();
                 Audio.jukeboxList.Add(jukeBoxObject);
             }
+            skipStop = false;
         }
 
         private GameObject ReturnObjectFromID(ulong JukeboxID)
