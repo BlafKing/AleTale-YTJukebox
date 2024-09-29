@@ -129,13 +129,11 @@ namespace YTJukeboxMod
 
         static public List<GameObject> GetAllJukeboxes()
         {
-            GameObject jukeboxManagerObject = GameObject.Find("Common/Game");
-            JukeboxManager jukeboxManager = jukeboxManagerObject.GetComponent<JukeboxManager>();
 
             Type jukeboxManagerType = typeof(JukeboxManager);
             FieldInfo fieldInfo = jukeboxManagerType.GetField("_jukeboxes", BindingFlags.NonPublic | BindingFlags.Instance);
 
-            Dictionary<ushort, Jukebox> jukeboxesDict = fieldInfo.GetValue(jukeboxManager) as Dictionary<ushort, Jukebox>;
+            Dictionary<ushort, Jukebox> jukeboxesDict = fieldInfo.GetValue(JukeboxManager.Instance) as Dictionary<ushort, Jukebox>;
             List<GameObject> jukeboxGameObjects = new List<GameObject>();
             foreach (var jukeboxEntry in jukeboxesDict)
             {

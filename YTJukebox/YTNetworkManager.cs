@@ -2,7 +2,6 @@
 using UnityEngine;
 using YTJukeboxMod;
 using System.Collections.Generic;
-using static SavedDevice;
 
 namespace YTJukebox
 {
